@@ -1,0 +1,75 @@
+{
+  "wards": [
+    {
+      "id": 1,
+      "name": "Ward 7 - Kalwa",
+      "population": 85000,
+      "risk_tier": "Yellow",
+      "case_count": 4,
+      "turbidity": 6.6,
+      "lat": 19.1972,
+      "lng": 73.0120
+    },
+    {
+      "id": 2,
+      "name": "Ward 12 - Mumbra",
+      "population": 120000,
+      "risk_tier": "Red",
+      "case_count": 18,
+      "turbidity": 45.7,
+      "lat": 19.1857,
+      "lng": 73.0284
+    },
+    {
+      "id": 3,
+      "name": "Ward 15 - Vartak Nagar",
+      "population": 95000,
+      "risk_tier": "Green",
+      "case_count": 1,
+      "turbidity": 2.1,
+      "lat": 19.2020,
+      "lng": 72.9670
+    },
+    {
+      "id": 4,
+      "name": "Ward 4 - Naupada",
+      "population": 60000,
+      "risk_tier": "Green",
+      "case_count": 0,
+      "turbidity": 1.8,
+      "lat": 19.1918,
+      "lng": 72.9715
+    },
+    {
+      "id": 5,
+      "name": "Ward 9 - Kausa",
+      "population": 70000,
+      "risk_tier": "Orange",
+      "case_count": 9,
+      "turbidity": 24.6,
+      "lat": 19.2010,
+      "lng": 73.0310
+    }
+  ],
+  "water_readings": [
+    { "ward_id": 1, "ph": 6.8, "turbidity": 6.2, "contamination_flag": false, "created_at": "2026-08-19" },
+    { "ward_id": 1, "ph": 6.7, "turbidity": 7.0, "contamination_flag": false, "created_at": "2026-08-20" },
+    { "ward_id": 2, "ph": 5.4, "turbidity": 42.5, "contamination_flag": true, "created_at": "2026-08-18" },
+    { "ward_id": 2, "ph": 5.1, "turbidity": 48.9, "contamination_flag": true, "created_at": "2026-08-20" },
+    { "ward_id": 3, "ph": 7.2, "turbidity": 2.1, "contamination_flag": false, "created_at": "2026-08-19" },
+    { "ward_id": 4, "ph": 7.0, "turbidity": 1.8, "contamination_flag": false, "created_at": "2026-08-19" },
+    { "ward_id": 5, "ph": 6.0, "turbidity": 22.4, "contamination_flag": true, "created_at": "2026-08-19" },
+    { "ward_id": 5, "ph": 5.9, "turbidity": 26.8, "contamination_flag": true, "created_at": "2026-08-20" }
+  ],
+  "reports": [
+    { "ward_id": 2, "symptom": "diarrhea", "case_count": 6, "reported_by": "health_worker", "created_at": "2026-08-18" },
+    { "ward_id": 2, "symptom": "vomiting", "case_count": 5, "reported_by": "health_worker", "created_at": "2026-08-19" },
+    { "ward_id": 2, "symptom": "fever", "case_count": 4, "reported_by": "citizen", "created_at": "2026-08-19" },
+    { "ward_id": 2, "symptom": "jaundice", "case_count": 3, "reported_by": "health_worker", "created_at": "2026-08-20" },
+    { "ward_id": 5, "symptom": "diarrhea", "case_count": 5, "reported_by": "health_worker", "created_at": "2026-08-17" },
+    { "ward_id": 5, "symptom": "vomiting", "case_count": 4, "reported_by": "citizen", "created_at": "2026-08-19" },
+    { "ward_id": 1, "symptom": "diarrhea", "case_count": 2, "reported_by": "citizen", "created_at": "2026-08-16" },
+    { "ward_id": 1, "symptom": "fever", "case_count": 2, "reported_by": "citizen", "created_at": "2026-08-18" },
+    { "ward_id": 3, "symptom": "fever", "case_count": 1, "reported_by": "citizen", "created_at": "2026-08-17" }
+  ]
+}
