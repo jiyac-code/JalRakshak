@@ -35,7 +35,7 @@ class ScoreInput(BaseModel):
     population: int
 
 def rule_based_risk_score(turbidity, ph, contamination_flag, case_rate):
-    """Simple point system: add points for each risky sign, then decide tier."""
+    #Simple point system: add points for each risky sign, then decide tier.
     points = 0
 
     if turbidity > 25:
