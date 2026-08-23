@@ -1,0 +1,11 @@
+# for risk- engine
+fastapi
+uvicorn
+scikit-learn
+pandas
+numpy
+joblib
+
+
+
+ 
