@@ -4,26 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JalRakshak - User Dashboard</title>
-  
+
   <!-- Modern Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
 
+  <!-- Leaflet (for real Geographic Incident Heatmap) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
   <style>
     :root {
       --bg-gradient: radial-gradient(circle at 50% 50%, #1e627a 0%, #113f50 50%, #0a2530 100%);
       --card-bg: rgba(255, 255, 255, 0.95);
-      
+
       /* Refined drop-style glow tokens */
       --drop-cyan: #00d4ff;
       --drop-glow: 0 0 8px rgba(0, 212, 255, 0.7), 0 0 16px rgba(0, 212, 255, 0.35);
       --drop-glow-hover: 0 0 12px rgba(0, 212, 255, 0.9), 0 0 24px rgba(0, 212, 255, 0.5);
-      
+
       --text-main: #0f172a;
       --text-muted: #475569;
       --radius-droplet: 24px 24px 24px 6px;
-      
+
       --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
@@ -219,8 +225,8 @@
       text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
     }
 
-    .kpi-card .status.danger { 
-      color: #dc2626; 
+    .kpi-card .status.danger {
+      color: #dc2626;
       font-weight: 700;
       font-size: 1rem;
     }
@@ -294,7 +300,7 @@
       letter-spacing: 0.5px;
     }
 
-    .form-group input, 
+    .form-group input,
     .form-group select {
       padding: 12px 16px;
       border: 1.5px solid #94a3b8;
@@ -380,9 +386,50 @@
       box-shadow: inset 0 0 12px rgba(0, 212, 255, 0.4);
     }
 
-    .map-svg {
+    /* Leaflet map fills the same box the fake SVG used to occupy */
+    #leaflet-map {
       width: 100%;
       height: 100%;
+      border-radius: 16px;
+      background: transparent;
+    }
+
+    .map-status-msg {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 0 16px;
+    }
+
+    /* Leaflet popup restyle to match dashboard look */
+    .leaflet-popup-content-wrapper {
+      border-radius: 14px;
+      border: 1.5px solid var(--drop-cyan);
+    }
+
+    .map-popup h3 {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+      color: #0f172a;
+    }
+
+    .map-popup p {
+      font-size: 0.95rem;
+      color: #334155;
+      margin: 2px 0;
+    }
+
+    .map-popup button {
+      margin-top: 8px;
+      padding: 6px 14px;
+      border: none;
+      border-radius: 10px;
+      background: var(--drop-cyan);
+      color: #0f172a;
+      font-weight: 700;
+      cursor: pointer;
     }
 
     .legend-container {
@@ -468,9 +515,9 @@
       letter-spacing: 0.3px;
     }
 
-    .badge.suspected { 
-      background: #fef3c7; 
-      color: #d97706; 
+    .badge.suspected {
+      background: #fef3c7;
+      color: #d97706;
       border: 1.5px solid #fde68a;
       box-shadow: 0 0 8px rgba(245, 158, 11, 0.35);
     }
@@ -556,7 +603,7 @@
       <h2 data-key="form_title">Report New Field Case & Environmental Risk Assessment</h2>
       <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);" data-key="form_subtitle">Field Health Worker Portal</span>
     </div>
-    
+
     <form id="case-report-form">
       <div class="form-grid">
         <div class="form-group">
@@ -587,7 +634,7 @@
       <div class="checkbox-section">
         <div class="checkbox-section-title" data-key="risk_section_title">Observed Risk Factors & Environmental Indicators:</div>
         <div class="checkbox-grid">
-          
+
           <label class="checkbox-card">
             <input type="checkbox" name="risk_factors" value="Dirty / Muddy Water" data-risk-key="risk_dirty">
             <span data-key="risk_dirty">Dirty / Muddy Water</span>
@@ -620,34 +667,15 @@
 
   <!-- Dashboard Main Grid -->
   <div class="dashboard-grid">
-    
+
     <!-- Map Section -->
     <div class="card" style="margin-bottom: 0;">
       <div class="card-header">
         <h2 data-key="map_title">Geographic Incident Heatmap</h2>
-        <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);" data-key="map_updated">Updated 10 mins ago</span>
+        <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);" id="map-updated-label" data-key="map_updated">Updated 10 mins ago</span>
       </div>
       <div class="map-container">
-        <svg class="map-svg" viewBox="0 0 400 200">
-          <path d="M20 40 Q 100 10, 200 50 T 380 40" fill="none" stroke="#2a6378" stroke-width="24"/>
-          <path d="M50 180 Q 180 120, 350 160" fill="none" stroke="#2a6378" stroke-width="16"/>
-          
-          <circle cx="120" cy="50" r="25" fill="#ef4444" opacity="0.3"/>
-          <circle cx="120" cy="50" r="8" fill="#ef4444"/>
-          <text x="135" y="55" font-size="12" fill="#ffffff" font-family="'Outfit', sans-serif" font-weight="800">Ward 12 - Mumbra</text>
-          
-          <circle cx="280" cy="130" r="18" fill="#facc15" opacity="0.3"/>
-          <circle cx="280" cy="130" r="6" fill="#facc15"/>
-          <text x="295" y="135" font-size="12" fill="#ffffff" font-family="'Outfit', sans-serif" font-weight="800">Ward 7 - Kalwa</text>
-
-          <circle cx="210" cy="80" r="30" fill="#ef4444" opacity="0.25"/>
-          <circle cx="210" cy="80" r="10" fill="#ef4444"/>
-          <text x="225" y="85" font-size="12" fill="#ffffff" font-family="'Outfit', sans-serif" font-weight="800">Ward 9 - Kausa</text>
-
-          <circle cx="60" cy="140" r="12" fill="#10b981" opacity="0.3"/>
-          <circle cx="60" cy="140" r="5" fill="#10b981"/>
-          <text x="72" y="144" font-size="12" fill="#ffffff" font-family="'Outfit', sans-serif" font-weight="800">Ward 4 - Naupada</text>
-        </svg>
+        <div id="leaflet-map"></div>
       </div>
     </div>
 
@@ -795,7 +823,9 @@
         th_risks: "Observed Risk Factors",
         th_status: "Status",
         status_suspected: "Suspected",
-        none_specified: "None specified"
+        none_specified: "None specified",
+        map_loading: "Loading live ward data...",
+        map_error: "Couldn't load live ward data - showing map only"
       },
       hi: {
         title: "जलरक्षक",
@@ -841,7 +871,9 @@
         th_risks: "देखे गए जोखिम कारक",
         th_status: "स्थिति",
         status_suspected: "संदिग्ध",
-        none_specified: "कोई उल्लेख नहीं"
+        none_specified: "कोई उल्लेख नहीं",
+        map_loading: "लाइव वार्ड डेटा लोड हो रहा है...",
+        map_error: "लाइव डेटा लोड नहीं हो सका"
       },
       mr: {
         title: "जलरक्षक",
@@ -887,7 +919,9 @@
         th_risks: "आढळलेले जोखीम घटक",
         th_status: "स्थिती",
         status_suspected: "संशयित",
-        none_specified: "काहीही नाही"
+        none_specified: "काहीही नाही",
+        map_loading: "लाइव्ह वॉर्ड डेटा लोड होत आहे...",
+        map_error: "लाइव्ह डेटा लोड करता आला नाही"
       }
     };
 
@@ -911,7 +945,7 @@
 
     function updateLanguage() {
       const langData = translations[currentLang];
-      
+
       document.querySelectorAll('[data-key]').forEach(elem => {
         const key = elem.getAttribute('data-key');
         if (langData[key]) {
@@ -989,6 +1023,102 @@
       reportSection.classList.remove('active');
       document.getElementById('reports-table-card').scrollIntoView({ behavior: 'smooth' });
     });
+
+    /* ---------------------------------------------------------------
+       LIVE HEATMAP (Leaflet) — replaces the old hardcoded SVG circles
+       Mirrors the color logic + data shape from RiskMap.jsx so the
+       React admin view and this page stay visually consistent.
+       Expects GET /api/wards/summary to return an array of wards:
+       { id, name, lat, lng, risk_tier, case_count, turbidity }
+    --------------------------------------------------------------- */
+
+    // Same mapping as getColor() in RiskMap.jsx
+    function getRiskColor(risk) {
+      switch ((risk || '').toUpperCase()) {
+        case 'GREEN': return '#10b981';
+        case 'YELLOW': return '#eab308';
+        case 'ORANGE': return '#f59e0b';
+        case 'RED': return '#ef4444';
+        default: return '#9ca3af'; // gray fallback, matches RiskMap.jsx default
+      }
+    }
+
+    let leafletMap = null;
+
+    function initLeafletMap() {
+      leafletMap = L.map('leaflet-map', {
+        scrollWheelZoom: true
+      }).setView([19.03, 72.85], 12); // Thane region, matches RiskMap.jsx center
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19
+      }).addTo(leafletMap);
+
+      loadWardData();
+    }
+
+    async function loadWardData() {
+      try {
+        const res = await fetch('http://localhost:5000/api/wards/summary');
+        if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+        const data = await res.json();
+        const wards = data.wards; // API returns { success, wards: [...] }, not a bare array
+        plotWards(wards);
+      } catch (err) {
+        console.error('Failed to load /api/wards/summary:', err);
+        // Fail gracefully — map still renders, just without live markers
+        const label = document.getElementById('map-updated-label');
+        if (label) {
+          label.textContent = translations[currentLang].map_error || "Couldn't load live ward data";
+          label.style.color = '#f87171';
+        }
+      }
+    }
+
+    function plotWards(wards) {
+      if (!Array.isArray(wards) || !leafletMap) return;
+
+      wards.forEach(ward => {
+        if (typeof ward.lat !== 'number' || typeof ward.lng !== 'number') return;
+
+        const color = getRiskColor(ward.risk_tier);
+
+        const marker = L.circleMarker([ward.lat, ward.lng], {
+          radius: 16,
+          color: color,
+          fillColor: color,
+          fillOpacity: 0.75,
+          weight: 3
+        }).addTo(leafletMap);
+
+        const popupHtml = `
+          <div class="map-popup">
+            <h3>${ward.name ?? 'Unknown Ward'}</h3>
+            <p><strong>Risk:</strong> ${ward.risk_tier ?? 'N/A'}</p>
+            <p><strong>Cases:</strong> ${ward.case_count ?? 'N/A'}</p>
+            <p><strong>Turbidity:</strong> ${ward.turbidity ?? 'N/A'}</p>
+          </div>
+        `;
+        marker.bindPopup(popupHtml);
+
+        // Clicking a marker also filters the reports table below,
+        // reusing the existing ward-filter dropdown/logic.
+        marker.on('click', () => {
+          const wardFilter = document.getElementById('filter-ward');
+          if (wardFilter && ward.name) {
+            const match = Array.from(wardFilter.options).find(o => o.value === ward.name || o.textContent === ward.name);
+            if (match) {
+              wardFilter.value = match.value;
+              wardFilter.dispatchEvent(new Event('change'));
+            }
+          }
+        });
+      });
+    }
+
+    // Init once DOM + Leaflet are ready
+    document.addEventListener('DOMContentLoaded', initLeafletMap);
   </script>
 </body>
 </html>
