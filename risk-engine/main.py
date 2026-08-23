@@ -1,20 +1,3 @@
-"""
-main.py
--------
-FastAPI service for the Risk Scoring + Waterborne-Cause Engine (Person 5).
-
-Endpoints (matching your project theme step by step):
-1. POST /score          -> risk tier (Green/Yellow/Orange/Red) for a ward
-2. POST /confirm        -> admin manually confirms yes/no after checking
-                           -> saves it as new training data
-3. POST /retrain        -> re-trains both models using dataset.json +
-                           all confirmed cases so far
-
-Run:
-    uvicorn main:app --reload
-Then open http://localhost:8000/docs to test everything interactively.
-"""
-
 from fastapi import FastAPI
 from pydantic import BaseModel
 import joblib
@@ -45,8 +28,7 @@ RECOMMENDED_ACTIONS = {
 
 
 # ==============================================================
-# 1. RISK TIER SCORING (unchanged from before)
-# ==============================================================
+# 1. RISK TIER SCORING 
 class ScoreRequest(BaseModel):
     turbidity: float
     ph: float
@@ -103,11 +85,6 @@ def score_ward(data: ScoreRequest, method: str = "rule_based"):
 
 # ==============================================================
 # 2. BATCH SCORING - risk tier + cause prediction for EVERY ward.
-# This is what the dashboard should call on load, not /score one at
-# a time. Every ward always has a risk tier, computed from the dataset
-# (plus any live user reports), whether or not anyone just submitted
-# something.
-# ==============================================================
 @app.get("/wards/risk-summary")
 def wards_risk_summary(method: str = "rule_based"):
     use_ml = (method == "ml")
@@ -116,16 +93,7 @@ def wards_risk_summary(method: str = "rule_based"):
 
 
 # ==============================================================
-# 3. FIELD CASE REPORT - matches "Report New Field Case & Environmental
-# Risk Assessment" form exactly: Ward/Location, Primary Water Source,
-# and 4 checkboxes (Dirty/Muddy Water, Mosquitoes, Family Members Ill,
-# Waterlogging). No turbidity, no ph, no risk tier typed by the health
-# worker - the system computes that.
-#
-# Every report starts as status "Suspected" - matching the status
-# column in the Recent Field Case Reports table - until an admin
-# reviews and confirms it via /confirm.
-# ==============================================================
+# 3. FIELD CASE REPORT 
 class FieldCaseReportRequest(BaseModel):
     ward_id: int
     water_source: str           # "Borewell", "Public Tap", "Tanker Supply", etc.
