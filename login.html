@@ -536,7 +536,7 @@
       <div class="divider">- OR -</div>
 
       <div class="secondary-grid">
-        <button type="button" class="btn-secondary">
+        <button type="button" class="btn-secondary" id="relocateBtn">
           <span>←</span> Relocate to Dashboard
         </button>
         <button type="button" class="btn-secondary">
@@ -574,9 +574,21 @@
         generateCaptcha();
         return false;
       }
-      alert("Authentication successful!");
+      
+      // Navigate directly to admindb.html on valid login
+      window.location.href = 'admindb.html';
       return true;
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Link the Relocate to Dashboard button directly to admindb.html
+      const relocateBtn = document.getElementById('relocateBtn');
+      if (relocateBtn) {
+        relocateBtn.addEventListener('click', () => {
+          window.location.href = 'admindb.html';
+        });
+      }
+    });
 
     window.onload = generateCaptcha;
   </script>
