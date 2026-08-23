@@ -71,7 +71,6 @@
       font-weight: 900;
       letter-spacing: -0.5px;
       color: #ffffff;
-      /* Subdued, crisp title text shadow */
       text-shadow: 0 2px 8px rgba(0, 212, 255, 0.25);
       line-height: 1.1;
     }
@@ -900,8 +899,9 @@
     const cancelBtn = document.getElementById('cancel-report-btn');
     const langSelect = document.getElementById('lang-select');
 
+    // Redirection to Login Page (login.html)
     loginBtn.addEventListener('click', () => {
-      alert('Login modal or redirection can be integrated here.');
+      window.location.href = 'login.html';
     });
 
     langSelect.addEventListener('change', (e) => {
@@ -926,6 +926,21 @@
         }
       });
     }
+
+    // Ward Filtering Logic
+    document.getElementById('filter-ward').addEventListener('change', function(e) {
+      const selectedWard = e.target.value;
+      const rows = document.querySelectorAll('#case-table-body tr');
+
+      rows.forEach(row => {
+        const wardCell = row.children[2].textContent;
+        if (selectedWard.includes('All') || selectedWard.includes('सभी') || selectedWard.includes('सर्व') || wardCell === selectedWard) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
 
     toggleBtn.addEventListener('click', () => {
       reportSection.classList.add('active');
