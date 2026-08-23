@@ -8,3 +8,11 @@ node_modules/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+venv/
+__pycache__/
+*.pyc
+model.pkl
+cause_model.pkl
+confirmed_cases.json
+ 

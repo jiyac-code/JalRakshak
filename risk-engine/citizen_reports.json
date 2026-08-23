@@ -1,0 +1,41 @@
+[
+  {
+    "report_id": "RPT-1044",
+    "ward_id": 0,
+    "water_source": "string",
+    "dirty_muddy_water": true,
+    "mosquitoes": true,
+    "family_members_ill": true,
+    "waterlogging": true,
+    "symptom": "string",
+    "risk_tier": "Yellow",
+    "points": 9,
+    "status": "Suspected"
+  },
+  {
+    "report_id": "RPT-1044",
+    "ward_id": 0,
+    "water_source": "string",
+    "dirty_muddy_water": true,
+    "mosquitoes": true,
+    "family_members_ill": true,
+    "waterlogging": true,
+    "symptom": "malaria",
+    "risk_tier": "Yellow",
+    "points": 9,
+    "status": "Suspected"
+  },
+  {
+    "report_id": "RPT-1044",
+    "ward_id": 12,
+    "water_source": "borewell",
+    "dirty_muddy_water": true,
+    "mosquitoes": true,
+    "family_members_ill": false,
+    "waterlogging": false,
+    "symptom": "malaria",
+    "risk_tier": "Yellow",
+    "points": 4,
+    "status": "Suspected"
+  }
+]
