@@ -1,12 +1,12 @@
 [
   {
-    "ward_id": 1,
-    "turbidity": 2.0,
-    "ph": 9.2,
-    "contamination_flag": false,
-    "case_rate_per_1000": 0.0,
-    "waterborne_symptom_ratio": 0.0,
-    "risk_tier": "string",
+    "ward_id": 11,
+    "turbidity": 10.0,
+    "ph": 9.9,
+    "contamination_flag": true,
+    "case_rate_per_1000": 10.0,
+    "waterborne_symptom_ratio": 10.0,
+    "risk_tier": "red",
     "is_waterborne": true
   }
 ]
