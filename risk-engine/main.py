@@ -26,9 +26,6 @@ RECOMMENDED_ACTIONS = {
     "Red": "Deploy water testing team immediately. Issue public advisory.",
 }
 
-
-# ==============================================================
-# 1. RISK TIER SCORING 
 class ScoreRequest(BaseModel):
     turbidity: float
     ph: float
@@ -36,13 +33,11 @@ class ScoreRequest(BaseModel):
     case_count: int
     population: int
 
-
 class ScoreResponse(BaseModel):
     risk_tier: str
     risk_score: int
     recommended_action: str
     method: str
-
 
 def rule_based_risk(turbidity, ph, contamination_flag, case_rate_per_1000):
     score = 0
@@ -60,7 +55,6 @@ def rule_based_risk(turbidity, ph, contamination_flag, case_rate_per_1000):
     elif score >= 2: tier = "Yellow"
     else: tier = "Green"
     return tier, score
-
 
 @app.post("/score", response_model=ScoreResponse)
 def score_ward(data: ScoreRequest, method: str = "rule_based"):
@@ -82,47 +76,32 @@ def score_ward(data: ScoreRequest, method: str = "rule_based"):
         method=used_method,
     )
 
-
-# ==============================================================
-# 2. BATCH SCORING - risk tier + cause prediction for EVERY ward.
 @app.get("/wards/risk-summary")
 def wards_risk_summary(method: str = "rule_based"):
     use_ml = (method == "ml")
     results = score_all_wards(risk_model, cause_model, use_ml=use_ml)
     return {"method": method, "wards": results}
 
-
-# ==============================================================
-# 3. FIELD CASE REPORT 
 class FieldCaseReportRequest(BaseModel):
     ward_id: int
-    water_source: str           # "Borewell", "Public Tap", "Tanker Supply", etc.
+    water_source: str
     dirty_muddy_water: bool
     mosquitoes: bool
     family_members_ill: bool
     waterlogging: bool
-    symptom: str = None         # optional: what symptom, if family_members_ill is true
-
+    symptom: str = None
 
 class FieldCaseReportResponse(BaseModel):
     report_id: str
-    risk_tier: str                # only ever "Green" or "Yellow" from this engine
-    status: str                    # "Suspected" until admin confirms
-    reasons: list[str]             # plain-English explanation, not just a label
+    risk_tier: str
+    status: str
+    reasons: list[str]
     message: str
 
-
-_report_counter = [1043]  # matches the #RPT-1043 style seen in the table
+_report_counter = [1043]
 
 @app.post("/citizen-report", response_model=FieldCaseReportResponse)
 def citizen_report(data: FieldCaseReportRequest):
-    """
-    RISK ENGINE 1 - field/citizen observations only.
-    This can NEVER return Orange/Red and NEVER triggers a confirmed
-    alert by itself - it's a soft early "Suspected" signal only.
-    The actual confirmed alert only ever comes from Risk Engine 2
-    (turbidity/ph based), via /wards/risk-summary or /score.
-    """
     tier, points, reasons = citizen_quick_score(
         data.dirty_muddy_water, data.mosquitoes, data.family_members_ill, data.waterlogging
     )
@@ -130,7 +109,6 @@ def citizen_report(data: FieldCaseReportRequest):
     _report_counter[0] += 1
     report_id = f"RPT-{_report_counter[0]}"
 
-    # Save every report (not just risky ones) - this feeds future retraining once confirmed cases build up a real pattern.
     save_citizen_report({
         "report_id": report_id,
         "ward_id": data.ward_id,
@@ -145,7 +123,6 @@ def citizen_report(data: FieldCaseReportRequest):
         "status": "Suspected",
     })
 
-    # If they mentioned illness, also count it toward that ward's case rate - this can push Risk Engine 2's tier up over time.
     if data.family_members_ill and data.symptom:
         save_live_report(data.ward_id, data.symptom, 1)
 
@@ -157,8 +134,6 @@ def citizen_report(data: FieldCaseReportRequest):
         message="Report submitted and marked as Suspected. It will be reviewed by the health department."
     )
 
-# ==============================================================
-# 4. ADMIN CONFIRMS + MODEL RETRAINS - combined into ONE step.Admin manually checked the water, confirms yes/no -> this saves that as new ground truth AND immediately retrains both models in the same call. No separate button needed for "update the model."==============================================================
 class ConfirmRequest(BaseModel):
     ward_id: int
     turbidity: float
@@ -166,20 +141,13 @@ class ConfirmRequest(BaseModel):
     contamination_flag: bool
     case_rate_per_1000: float
     waterborne_symptom_ratio: float
-    risk_tier: str          # admin/health dept's final call on risk tier
-    is_waterborne: bool     # admin's final confirmed yes/no on cause
-
+    risk_tier: str
+    is_waterborne: bool
 
 @app.post("/confirm")
 def confirm_case(data: ConfirmRequest):
-    """
-    Admin has manually verified this case (checked the water in person).
-    This single call: saves the confirmed answer AND retrains both
-    models right away, using dataset.json + all confirmed cases so far -
-    including the one just submitted.
-    """
     global risk_model, cause_model
-    risk_model, cause_model, df = confirm_and_retrain(data.dict())
+    risk_model, cause_model, df = confirm_and_retrain(data.model_dump() if hasattr(data, 'model_dump') else data.dict())
     return {
         "status": "confirmed_and_retrained",
         "message": "Case confirmed and both models updated using the new data.",

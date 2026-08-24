@@ -1,55 +1,98 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./db');
+const mongoose = require('mongoose');
 
-// GET /api/wards/summary - GIS Heatmap dataset
+// Schema aligned with server.js including risk_tier
+const wardSchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  latitude: { type: Number, default: 19.18 },
+  longitude: { type: Number, default: 73.02 },
+  total_reported_cases: { type: Number, default: 0 },
+  turbidity: { type: Number, default: 5.0 },
+  ph: { type: Number, default: 7.2 },
+  risk_tier: { type: String, enum: ['GREEN', 'YELLOW', 'ORANGE', 'RED'], default: 'GREEN' }
+});
+
+// Re-use model if already declared in server.js to prevent overwrite errors
+const Ward = mongoose.models.Ward || mongoose.model('Ward', wardSchema);
+
+// Pre-populate coordinates for Mumbai/Thane Wards
+const WARD_COORDINATES = {
+  "Ward 7 - Kalwa": { lat: 19.1982, lng: 72.9991 },
+  "Ward 12 - Mumbra": { lat: 19.1793, lng: 73.0232 },
+  "Ward 15 - Vartak Nagar": { lat: 19.2183, lng: 72.9634 },
+  "Ward 4 - Naupada": { lat: 19.1868, lng: 72.9735 },
+  "Ward 9 - Kausa": { lat: 19.1584, lng: 73.0315 }
+};
+
+// GET /api/wards/summary
 router.get('/summary', async (req, res) => {
   try {
-    let wards = [];
-    try {
-      const result = await db.query(`
-        SELECT id, name, risk_tier, case_count, turbidity,
-               ST_X(location::geometry) as lng, ST_Y(location::geometry) as lat
-        FROM wards;
-      `);
-      wards = result.rows;
-    } catch (dbErr) {
-      console.warn('Serving mock ward summary (DB pending):', dbErr.message);
-      wards = [
-        { id: 1, name: 'Ward 12 - Matunga', risk_tier: 'Red', case_count: 42, turbidity: 8.5, lat: 19.0269, lng: 72.8553 },
-        { id: 2, name: 'Ward 14 - Dadar', risk_tier: 'Yellow', case_count: 12, turbidity: 3.1, lat: 19.0178, lng: 72.8478 },
-        { id: 3, name: 'Ward 08 - Wadala', risk_tier: 'Green', case_count: 3, turbidity: 1.2, lat: 19.0152, lng: 72.8580 }
-      ];
+    let wards = await Ward.find();
+
+    // Seed initial default wards if DB is empty
+    if (wards.length === 0) {
+      const defaultWards = Object.keys(WARD_COORDINATES).map((wardName) => ({
+        name: wardName,
+        latitude: WARD_COORDINATES[wardName].lat,
+        longitude: WARD_COORDINATES[wardName].lng,
+        total_reported_cases: 0,
+        turbidity: 4.5,
+        ph: 7.1,
+        risk_tier: 'GREEN'
+      }));
+      wards = await Ward.insertMany(defaultWards);
     }
 
-    res.status(200).json({ success: true, wards });
+    // Combine lab-assigned risk tiers with dynamic case count thresholds
+    const formattedWards = wards.map(w => {
+      let computed_tier = w.risk_tier || 'GREEN';
+
+      // Elevate risk tier if report count exceeds threshold, without overwriting explicit RED tiers
+      if (w.total_reported_cases >= 10) {
+        computed_tier = 'RED';
+      } else if (w.total_reported_cases >= 5 && computed_tier !== 'RED') {
+        computed_tier = 'ORANGE';
+      } else if (w.total_reported_cases >= 2 && !['RED', 'ORANGE'].includes(computed_tier)) {
+        computed_tier = 'YELLOW';
+      }
+
+      const coords = WARD_COORDINATES[w.name] || { lat: w.latitude, lng: w.longitude };
+
+      return {
+        id: w._id,
+        name: w.name,
+        latitude: coords.lat,
+        longitude: coords.lng,
+        total_reported_cases: w.total_reported_cases,
+        turbidity: w.turbidity,
+        ph: w.ph,
+        risk_tier: computed_tier
+      };
+    });
+
+    return res.status(200).json({ success: true, wards: formattedWards });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 });
 
-// GET /api/wards/:id/details - Single Ward Deep-Dive
-router.get('/:id/details', async (req, res) => {
-  const { id } = req.params;
-
+// GET /api/wards/kpi
+router.get('/kpi', async (req, res) => {
   try {
-    const isHighRisk = id === '1';
-    
-    res.status(200).json({
-      success: true,
-      ward: {
-        id: parseInt(id),
-        name: `Ward ${id}`,
-        risk_tier: isHighRisk ? 'Red' : 'Yellow',
-        recommended_action: isHighRisk 
-          ? 'Deploy emergency chlorination unit to main pipeline & inform local clinic.' 
-          : 'Increase testing frequency at water source B.',
-        symptom_breakdown: { diarrhea: 22, vomiting: 14, fever: 6 },
-        water_metrics: { ph: 6.8, turbidity: 7.9, coliform_detected: isHighRisk }
-      }
+    const Report = mongoose.model('Report');
+    const criticalAlerts = await Report.countDocuments({ status: 'Confirmed' });
+    const criticalWards = await Report.distinct('location', { status: 'Confirmed' });
+
+    return res.status(200).json({
+      totalContaminationAlerts: criticalAlerts,
+      flaggedWards: criticalWards,
+      statusMessage: criticalWards.length > 0 
+        ? `${criticalWards.length} Critical flags in ${criticalWards.join(' & ')}`
+        : 'All monitored wards operating at safe levels.'
     });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 });
 

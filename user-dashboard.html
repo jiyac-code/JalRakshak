@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JalRakshak - User Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 50% 50%, #1e627a 0%, #113f50 50%, #0a2530 100%);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --drop-cyan: #00d4ff;
+      --drop-glow: 0 0 8px rgba(0, 212, 255, 0.7), 0 0 16px rgba(0, 212, 255, 0.35);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --radius-droplet: 24px 24px 24px 6px;
+      --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      padding: 28px;
+      min-height: 100vh;
+      font-family: var(--font-body);
+      font-size: 1.1rem;
+    }
+    h1, h2, h3, h4, .btn-primary, .btn-secondary, .kpi-card .value { font-family: var(--font-heading); }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 20px; }
+    .header-title h1 { font-size: 3.2rem; font-weight: 900; color: #ffffff; text-shadow: 0 2px 8px rgba(0, 212, 255, 0.25); line-height: 1.1; }
+    .header-title p { font-size: 1.4rem; font-weight: 600; color: var(--drop-cyan); margin-top: 4px; text-transform: uppercase; }
+    .header-controls { display: flex; align-items: center; gap: 16px; }
+    .btn-primary {
+      background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
+      color: #ffffff;
+      border: 2px solid var(--drop-cyan);
+      padding: 14px 28px;
+      border-radius: var(--radius-droplet);
+      font-weight: 800;
+      font-size: 1.15rem;
+      cursor: pointer;
+      box-shadow: var(--drop-glow);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.95);
+      color: #0f172a;
+      border: 2px solid var(--drop-cyan);
+      padding: 14px 24px;
+      border-radius: var(--radius-droplet);
+      font-weight: 800;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: var(--drop-glow);
+    }
+    .filters-bar, .kpi-card, .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-droplet);
+      border: 2px solid var(--drop-cyan);
+      box-shadow: var(--drop-glow), 0 8px 24px rgba(0, 0, 0, 0.25);
+      padding: 26px;
+      margin-bottom: 28px;
+    }
+    .filters-bar { display: flex; gap: 20px; }
+    .filter-group { display: flex; flex-direction: column; gap: 6px; }
+    .filter-group label { font-size: 0.9rem; font-weight: 800; color: #0284c7; text-transform: uppercase; }
+    .filter-group select { padding: 10px 16px; border: 1.5px solid var(--drop-cyan); border-radius: 12px; font-weight: 600; font-size: 1.05rem; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+    .kpi-card .label { font-size: 1.05rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+    .kpi-card .value { font-size: 3.5rem; font-weight: 900; color: #0f172a; margin-bottom: 8px; }
+    .kpi-card .status.danger { color: #dc2626; font-weight: 700; }
+    .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 28px; }
+    @media (max-width: 992px) { .dashboard-grid { grid-template-columns: 1fr; } }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--drop-cyan); padding-bottom: 12px; }
+    .form-panel { display: none; background: rgba(255, 255, 255, 0.98); }
+    .form-panel.active { display: block; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 20px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 0.95rem; font-weight: 800; color: #0284c7; text-transform: uppercase; }
+    .form-group input, .form-group select { padding: 12px 16px; border: 1.5px solid #94a3b8; border-radius: 12px; font-size: 1.05rem; }
+    .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+    .checkbox-card { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #f8fafc; border: 1.5px solid var(--drop-cyan); border-radius: 14px; }
+    .map-container { width: 100%; height: 350px; border-radius: 18px; border: 2px solid var(--drop-cyan); }
+    #leaflet-map { width: 100%; height: 100%; border-radius: 16px; }
+    .legend-container { display: flex; flex-direction: column; gap: 20px; justify-content: center; height: 350px; }
+    .legend-item { display: flex; align-items: center; gap: 14px; font-weight: 700; }
+    .legend-color { width: 24px; height: 24px; border-radius: 50%; }
+    .legend-color.red-orange { background: #ef4444; }
+    .legend-color.yellow { background: #eab308; }
+    .legend-color.green { background: #10b981; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { background-color: rgba(0, 212, 255, 0.12); padding: 16px 14px; font-weight: 800; color: #0284c7; border-bottom: 2px solid var(--drop-cyan); text-transform: uppercase; font-size: 0.9rem; }
+    td { padding: 16px 14px; border-bottom: 1px solid #e2e8f0; font-weight: 600; }
+    .badge { display: inline-block; padding: 6px 14px; border-radius: 14px; font-size: 0.9rem; font-weight: 800; }
+    .badge.suspected { background: #fef3c7; color: #d97706; }
+    .badge.confirmed { background: #fee2e2; color: #b91c1c; }
+    .badge.risk-high { background: #fee2e2; color: #dc2626; }
+    .badge.risk-low { background: #dcfce7; color: #15803d; }
+
+    .emergency-alert-banner {
+      display: none;
+      background: linear-gradient(135deg, #7f1d1d 0%, #dc2626 100%);
+      color: #ffffff;
+      border: 2px solid #fca5a5;
+      border-radius: var(--radius-droplet);
+      padding: 24px;
+      margin-top: 28px;
+      box-shadow: 0 0 20px rgba(220, 38, 38, 0.8);
+      animation: alertPulse 2s infinite alternate;
+    }
+    .emergency-alert-banner.active { display: block; }
+    .emergency-alert-banner h3 { font-size: 1.5rem; font-weight: 900; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .emergency-alert-banner p { font-size: 1.1rem; font-weight: 600; line-height: 1.5; }
+    @keyframes alertPulse {
+      0% { box-shadow: 0 0 12px rgba(220, 38, 38, 0.5); }
+      100% { box-shadow: 0 0 24px rgba(220, 38, 38, 0.95); }
+    }
+
+    /* Alert Messages Container & Close Button Styling */
+    .alert-panel-wrapper {
+      background: var(--card-bg);
+      border-radius: var(--radius-droplet);
+      border: 2px solid var(--drop-cyan);
+      box-shadow: var(--drop-glow), 0 8px 24px rgba(0, 0, 0, 0.25);
+      padding: 26px;
+      margin-top: 28px;
+    }
+    .alert-messages-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .alert-card {
+      padding: 16px 20px;
+      border-radius: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 1rem;
+    }
+    .alert-card-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .alert-dismiss-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.25rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: inherit;
+      opacity: 0.6;
+      padding: 0 4px;
+      line-height: 1;
+      transition: opacity 0.2s ease, transform 0.1s ease;
+    }
+    .alert-dismiss-btn:hover {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+    .alert-card.yellow {
+      background-color: #fef3c7;
+      border: 2px solid #f59e0b;
+      color: #92400e;
+    }
+    .alert-card.orange {
+      background-color: #ffedd5;
+      border: 2px solid #f97316;
+      color: #9a3412;
+    }
+    .alert-card.red {
+      background-color: #fee2e2;
+      border: 2px solid #ef4444;
+      color: #991b1b;
+      animation: alertPulse 2s infinite alternate;
+    }
+    .alert-card.default {
+      background-color: #f1f5f9;
+      border: 2px solid #cbd5e1;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>JalRakshak</h1>
+      <p>User Dashboard</p>
+    </div>
+    <div class="header-controls">
+      <button id="login-btn" class="btn-secondary">Log In</button>
+      <button id="toggle-report-btn" class="btn-primary">+ Report New Case</button>
+    </div>
+  </header>
+
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>Ward / Zone</label>
+      <select id="filter-ward">
+        <option value="ALL">All Wards</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="label">Water Contamination Alerts</div>
+      <div class="value" id="alert-count-val">0</div>
+      <div class="status danger" id="alert-summary-text">Fetching active ward status...</div>
+    </div>
+  </div>
+
+  <div class="card form-panel" id="report-section">
+    <div class="card-header">
+      <h2>Report New Field Case & Environmental Risk Assessment</h2>
+    </div>
+    <form id="case-report-form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="location">Ward / Location *</label>
+          <select id="location" required><option value="">Select Ward</option></select>
+        </div>
+        <div class="form-group">
+          <label for="waterSource">Primary Water Source *</label>
+          <select id="waterSource" required>
+            <option value="">Select Water Source</option>
+            <option value="Public Tap">Public Tap</option>
+            <option value="Borewell">Borewell</option>
+            <option value="Tanker Supply">Tanker Supply</option>
+            <option value="Open Well">Open Well</option>
+          </select>
+        </div>
+      </div>
+      <div class="checkbox-grid">
+        <label class="checkbox-card"><input type="checkbox" name="risk_factors" value="Dirty / Muddy Water"><span>Dirty / Muddy Water</span></label>
+        <label class="checkbox-card"><input type="checkbox" name="risk_factors" value="Mosquitoes"><span>Mosquitoes</span></label>
+        <label class="checkbox-card"><input type="checkbox" name="risk_factors" value="Family Members Ill"><span>Family Members Ill</span></label>
+        <label class="checkbox-card"><input type="checkbox" name="risk_factors" value="Waterlogging"><span>Waterlogging</span></label>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 14px; margin-top: 20px;">
+        <button type="button" id="cancel-report-btn" class="btn-secondary">Cancel</button>
+        <button type="submit" class="btn-primary">Submit Field Report</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="card">
+      <div class="card-header"><h2>Geographic Incident Heatmap</h2></div>
+      <div class="map-container"><div id="leaflet-map"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Heatmap Key</h2></div>
+      <div class="legend-container">
+        <div class="legend-item"><div class="legend-color red-orange"></div><span>Red / Orange - Critical Alert Zone</span></div>
+        <div class="legend-item"><div class="legend-color yellow"></div><span>Yellow - Moderate Risk Zone</span></div>
+        <div class="legend-item"><div class="legend-color green"></div><span>Green - Safe Zone</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="reports-table-card">
+    <div class="card-header"><h2>Recent Field Case Reports</h2></div>
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Report ID</th>
+            <th>Date</th>
+            <th>Ward</th>
+            <th>Water Source</th>
+            <th>Risk Factors</th>
+            <th>AI Risk Assessment</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="case-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="emergency-alert-banner" id="bottom-emergency-banner">
+    <h3>🚨 Emergency Red Zone Outbreak Warning</h3>
+    <p id="bottom-alert-text">High contamination risk detected in monitored wards. Avoid consuming untreated tap water.</p>
+  </div>
+
+  <!-- Alert Messages Add-on Section -->
+  <div class="alert-panel-wrapper">
+    <div class="card-header" style="margin-bottom: 0;">
+      <h2>Alert Messages</h2>
+    </div>
+    <div id="alert-messages-list" class="alert-messages-container">
+      <div class="alert-card default">
+        <div class="alert-card-content">
+          <span>ℹ️</span>
+          <div>No active alert messages reported.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const API_BASE = "http://127.0.0.1:5000";
+  const socket = io(API_BASE);
+
+  let map = null, mapMarkersLayer = null;
+  let initialDropdownsPopulated = false;
+
+  // Local storage for dynamically added alert messages
+  const liveAlertMessages = [];
+
+  function removeAlertMessage(id) {
+    const index = liveAlertMessages.findIndex(a => a.id === id);
+    if (index !== -1) {
+      liveAlertMessages.splice(index, 1);
+      updateAlertMessagesPanel();
+    }
+  }
+
+  function updateAlertMessagesPanel() {
+    const container = document.getElementById('alert-messages-list');
+    if (!container) return;
+
+    if (liveAlertMessages.length === 0) {
+      container.innerHTML = `
+        <div class="alert-card default">
+          <div class="alert-card-content">
+            <span>ℹ️</span>
+            <div>No active alert messages reported.</div>
+          </div>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = liveAlertMessages.map(alert => `
+      <div class="alert-card ${alert.colorClass}">
+        <div class="alert-card-content">
+          <span>${alert.icon}</span>
+          <div>${alert.text}</div>
+        </div>
+        <button class="alert-dismiss-btn" onclick="removeAlertMessage('${alert.id}')" title="Dismiss Alert">✕</button>
+      </div>
+    `).join('');
+  }
+
+  function addAlertMessage(colorClass, text) {
+    let icon = 'ℹ️';
+    if (colorClass === 'yellow') icon = '⚠️';
+    if (colorClass === 'orange') icon = '☣️';
+    if (colorClass === 'red') icon = '🚨';
+
+    const exists = liveAlertMessages.some(a => a.text === text);
+    if (!exists) {
+      const id = 'alert-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+      liveAlertMessages.unshift({ id, colorClass, text, icon });
+      updateAlertMessagesPanel();
+    }
+  }
+
+  const reportSection = document.getElementById('report-section');
+  const filterWardSelect = document.getElementById('filter-ward');
+  const formLocationSelect = document.getElementById('location');
+
+  document.getElementById('login-btn').addEventListener('click', () => window.location.href = 'login.html');
+  document.getElementById('toggle-report-btn').addEventListener('click', () => {
+    reportSection.classList.add('active');
+    reportSection.scrollIntoView({ behavior: 'smooth' });
+  });
+  document.getElementById('cancel-report-btn').addEventListener('click', () => reportSection.classList.remove('active'));
+
+  function initLeafletMap() {
+    map = L.map('leaflet-map').setView([19.19, 73.00], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
+    mapMarkersLayer = L.layerGroup().addTo(map);
+  }
+
+  function getRiskColor(tier) {
+    switch ((tier || '').toUpperCase()) {
+      case 'RED': return '#ef4444';
+      case 'ORANGE': return '#f97316';
+      case 'YELLOW': return '#eab308';
+      default: return '#10b981';
+    }
+  }
+
+  async function loadMapAndWards() {
+    try {
+      const res = await fetch(`${API_BASE}/api/wards/summary`);
+      const data = await res.json();
+      const wards = data.wards || [];
+
+      mapMarkersLayer.clearLayers();
+      let criticalWards = [];
+      let markerBounds = [];
+
+      if (!initialDropdownsPopulated && wards.length > 0) {
+        filterWardSelect.innerHTML = '<option value="ALL">All Wards</option>';
+        formLocationSelect.innerHTML = '<option value="">Select Ward</option>';
+        wards.forEach(ward => {
+          filterWardSelect.appendChild(new Option(ward.name, ward.name));
+          formLocationSelect.appendChild(new Option(ward.name, ward.name));
+        });
+        filterWardSelect.value = "ALL";
+        initialDropdownsPopulated = true;
+      }
+
+      wards.forEach(ward => {
+        const color = getRiskColor(ward.risk_tier);
+        const lat = parseFloat(ward.latitude);
+        const lng = parseFloat(ward.longitude);
+        
+        if (!isNaN(lat) && !isNaN(lng)) {
+          markerBounds.push([lat, lng]);
+          const circle = L.circleMarker([lat, lng], {
+            color: color, fillColor: color, fillOpacity: 0.8, radius: 10
+          });
+          circle.bindPopup(`<strong>${ward.name}</strong><br>Status Tier: <b>${ward.risk_tier}</b><br>Field Reports: ${ward.total_reported_cases}`);
+          mapMarkersLayer.addLayer(circle);
+        }
+
+        const tier = (ward.risk_tier || '').toUpperCase();
+        if (tier === 'ORANGE') {
+          addAlertMessage('orange', `MODERATE RISK ALERT: High parameters detected in ${ward.name}. Ward remains under active monitoring.`);
+        } else if (tier === 'RED') {
+          addAlertMessage('red', `CRITICAL RED ZONE WARNING: Severe contamination detected in ${ward.name}! Boil tap water prior to consumption.`);
+          criticalWards.push(ward.name);
+        }
+      });
+
+      if (markerBounds.length > 0) {
+        map.fitBounds(markerBounds, { padding: [40, 40] });
+      }
+
+      document.getElementById('alert-count-val').innerText = criticalWards.length;
+      document.getElementById('alert-summary-text').innerText = criticalWards.length > 0 
+        ? `Critical flags in: ${criticalWards.join(', ')}` 
+        : 'All monitored wards operating at safe levels.';
+
+      const bottomBanner = document.getElementById('bottom-emergency-banner');
+      if (criticalWards.length > 0) {
+        bottomBanner.classList.add('active');
+        document.getElementById('bottom-alert-text').innerText = 
+          `CRITICAL WATER OUTBREAK WARNING: High contamination levels detected in ${criticalWards.join(' & ')}. Boil tap water prior to consumption.`;
+      } else {
+        bottomBanner.classList.remove('active');
+      }
+
+    } catch (err) { console.error("Map load error:", err); }
+  }
+
+  async function loadReportsTable() {
+    try {
+      const filterVal = (filterWardSelect && filterWardSelect.value) ? filterWardSelect.value : 'ALL';
+      const query = (filterVal && filterVal !== 'ALL') ? `?location=${encodeURIComponent(filterVal)}` : '';
+      
+      const res = await fetch(`${API_BASE}/api/reports${query}`);
+      const data = await res.json();
+      const reports = data.reports || [];
+
+      const tableBody = document.getElementById('case-table-body');
+      if (reports.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#64748b;">No field reports submitted yet. Use "+ Report New Case" above to log one.</td></tr>`;
+        return;
+      }
+
+      tableBody.innerHTML = reports.map(r => `
+        <tr>
+          <td style="color:#0284c7; font-weight:800;">${r.reportId}</td>
+          <td>${r.date || 'Just Now'}</td>
+          <td>${r.location}</td>
+          <td>${r.waterSource}</td>
+          <td>${r.riskFactors}</td>
+          <td><span class="badge ${r.riskLevel === 'High' ? 'risk-high' : 'risk-low'}">${r.riskLevel || 'Low'}</span></td>
+          <td><span class="badge ${r.status === 'Confirmed' ? 'confirmed' : 'suspected'}">${r.status}</span></td>
+        </tr>
+      `).join('');
+    } catch (err) { console.error("Table load error:", err); }
+  }
+
+  filterWardSelect.addEventListener('change', loadReportsTable);
+
+  document.getElementById('case-report-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerText;
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Submitting...";
+
+    const selectedWard = document.getElementById('location').value;
+
+    try {
+      const checkedBoxes = document.querySelectorAll('input[name="risk_factors"]:checked');
+      const payload = {
+        location: selectedWard,
+        waterSource: document.getElementById('waterSource').value,
+        riskFactors: Array.from(checkedBoxes).map(cb => cb.value)
+      };
+
+      const response = await fetch(`${API_BASE}/api/reports`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // Yellow alert notification added on submission
+        addAlertMessage('yellow', `SUSPECT CASE REPORTED: A field case report has been submitted for ${selectedWard}. Region is currently in suspected status.`);
+        
+        alert("Field report submitted successfully!");
+        this.reset();
+        reportSection.classList.remove('active');
+        await loadReportsTable();
+        await loadMapAndWards();
+      } else {
+        alert(`Failed to submit: ${result.error || 'Server error'}`);
+      }
+    } catch (err) {
+      console.error("Submission Error:", err);
+      alert("Network error: Check browser console or make sure node server is running at http://127.0.0.1:5000");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerText = originalText;
+    }
+  });
+
+  socket.on("connect", () => console.log("Socket Connected"));
+  socket.on("new_report_added", () => { loadReportsTable(); loadMapAndWards(); });
+  socket.on("report_status_updated", () => { loadReportsTable(); loadMapAndWards(); });
+  socket.on("ward_risk_updated", (data) => { 
+    loadMapAndWards();
+    if (data && data.wardName) {
+      if (data.predictedRiskTier === 'ORANGE') {
+        addAlertMessage('orange', `LAB TEST ALERT: Moderate risk detected in ${data.wardName}. Monitoring intensified.`);
+      } else if (data.predictedRiskTier === 'RED') {
+        addAlertMessage('red', `CRITICAL LAB ALERT: High contamination confirmed in ${data.wardName}! Immediate action required.`);
+      }
+    }
+  });
+  socket.on("new_system_alert", (alertData) => {
+    loadMapAndWards();
+    if (alertData && alertData.message) {
+      addAlertMessage('red', `SYSTEM ALERT: ${alertData.message}`);
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    initLeafletMap();
+    await loadMapAndWards();
+    await loadReportsTable();
+  });
+</script>
+</body>
+</html>

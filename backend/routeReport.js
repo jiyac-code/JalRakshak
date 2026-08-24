@@ -1,68 +1,111 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./db');
-const { evaluateWardRisk } = require('./riskEngine');
+const mongoose = require('mongoose');
+const { calculateRiskScore } = require('./riskEngine');
 
-// POST /api/reports/symptom - Log case report
-router.post('/symptom', async (req, res) => {
-  const { ward_id, symptom, case_count, lat, lng } = req.body;
-
-  try {
-    let result = null;
-    try {
-      const query = `
-        INSERT INTO reports (ward_id, symptom, case_count, location)
-        VALUES ($1, $2, $3, ST_SetSRID(ST_MakePoint($4, $5), 4326))
-        RETURNING *;
-      `;
-      const dbRes = await db.query(query, [ward_id, symptom, case_count, lng, lat]);
-      result = dbRes.rows[0];
-    } catch (dbErr) {
-      console.warn('DB insert bypassed (fallback mode active):', dbErr.message);
-    }
-
-    const updatedRisk = await evaluateWardRisk(ward_id);
-
-    res.status(201).json({
-      success: true,
-      message: 'Symptom report recorded successfully',
-      data: result || { ward_id, symptom, case_count, lat, lng, created_at: new Date() },
-      updated_risk: updatedRisk
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
+const reportSchema = new mongoose.Schema({
+  reportId: { type: String, required: true, unique: true },
+  location: { type: String, required: true },
+  waterSource: { type: String, required: true },
+  riskFactors: { type: String, default: 'None' },
+  riskScore: { type: Number, default: 0 },
+  riskLevel: { type: String, default: 'Low' },
+  status: { type: String, enum: ['Suspected', 'Confirmed', 'Resolved'], default: 'Suspected' },
+  date: { type: String },
+  reportedAt: { type: Date, default: Date.now }
 });
 
-// POST /api/reports/water - Log water quality sample
-router.post('/water', async (req, res) => {
-  const { ward_id, ph, turbidity, contamination_flag } = req.body;
+const Report = mongoose.model('Report', reportSchema);
 
-  try {
-    let result = null;
+module.exports = (io) => {
+  // POST /api/reports
+  router.post('/', async (req, res) => {
     try {
-      const query = `
-        INSERT INTO water_readings (ward_id, ph, turbidity, contamination_flag)
-        VALUES ($1, $2, $3, $4)
-        RETURNING *;
-      `;
-      const dbRes = await db.query(query, [ward_id, ph, turbidity, contamination_flag]);
-      result = dbRes.rows[0];
-    } catch (dbErr) {
-      console.warn('DB water insert bypassed (fallback mode active):', dbErr.message);
+      const { location, ward, waterSource, riskFactors, status } = req.body;
+      const targetWard = location || ward;
+
+      if (!targetWard || !waterSource) {
+        return res.status(400).json({ error: "Ward location and Water Source are required." });
+      }
+
+      const count = await Report.countDocuments();
+      const reportId = `#RPT-${1043 + count}`;
+      
+      const parsedRiskFactors = Array.isArray(riskFactors) 
+        ? riskFactors.join(', ') 
+        : (riskFactors || 'None specified');
+
+      const riskList = Array.isArray(riskFactors) 
+        ? riskFactors 
+        : (typeof riskFactors === 'string' ? riskFactors.split(', ') : []);
+
+      const { score, riskLevel } = calculateRiskScore ? calculateRiskScore(riskList) : { score: 10, riskLevel: 'Low' };
+
+      const formattedDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+      const newReport = new Report({
+        reportId,
+        location: targetWard,
+        waterSource,
+        riskFactors: parsedRiskFactors,
+        riskScore: score,
+        riskLevel,
+        status: status || 'Suspected',
+        date: formattedDate
+      });
+
+      const savedReport = await newReport.save();
+
+      // Automatically update or create corresponding Ward aggregation record
+      const Ward = mongoose.model('Ward');
+      await Ward.findOneAndUpdate(
+        { name: targetWard },
+        { $inc: { total_reported_cases: 1 } },
+        { upsert: true, new: true }
+      );
+
+      // Emit socket event to update connected clients in real time
+      io.emit('new_report_added', savedReport);
+
+      return res.status(201).json({ success: true, report: savedReport });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
     }
+  });
 
-    const updatedRisk = await evaluateWardRisk(ward_id);
+  // GET /api/reports
+  router.get('/', async (req, res) => {
+    try {
+      const { ward, location } = req.query;
+      const filterWard = location || ward;
+      
+      const query = filterWard && filterWard !== 'ALL' && filterWard !== 'All Wards' ? { location: filterWard } : {};
+      const reports = await Report.find(query).sort({ reportedAt: -1 });
 
-    res.status(201).json({
-      success: true,
-      message: 'Water reading recorded successfully',
-      data: result || { ward_id, ph, turbidity, contamination_flag, created_at: new Date() },
-      updated_risk: updatedRisk
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
+      return res.status(200).json({ success: true, reports });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
 
-module.exports = router;
+  // PATCH /api/reports/:id/status
+  router.patch('/:id/status', async (req, res) => {
+    try {
+      const { status } = req.body;
+      const updatedReport = await Report.findOneAndUpdate(
+        { $or: [{ reportId: req.params.id }, { reportId: `#${req.params.id}` }] },
+        { status },
+        { new: true }
+      );
+
+      if (!updatedReport) return res.status(404).json({ error: "Report not found." });
+
+      io.emit('report_status_updated', updatedReport);
+      return res.status(200).json({ success: true, report: updatedReport });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
+  return router;
+};

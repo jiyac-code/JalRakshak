@@ -31,7 +31,6 @@
       --pastel-red-text: #b91c1c;
       --radius-lg: 16px;
       --radius-md: 10px;
-      --radius-sm: 6px;
       --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -65,8 +64,6 @@
     .btn { padding: 0.65rem 1.25rem; border: none; border-radius: var(--radius-md); font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: var(--transition); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
     .btn-primary { background: var(--accent-cyan); color: #ffffff; box-shadow: 0 4px 12px var(--accent-glow); }
     .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
-    .btn-secondary { background: #ffffff; color: #0b2536; border: 1px solid #cbd5e1; }
-    .btn-secondary:hover { background: #f1f5f9; transform: translateY(-1px); }
     .status-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.9rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
     .status-badge::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
     .status-online { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
@@ -74,26 +71,14 @@
     .status-offline { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
     .status-offline::before { background: #ef4444; }
 
-    /* Dynamic Alert Section */
-    #alert-container {
-      margin-bottom: 2rem;
-      display: none;
-    }
-
+    #alert-container { margin-bottom: 2rem; display: none; }
     .alert-card {
       background: rgba(254, 242, 242, 0.95);
       border: 2px solid #ef4444;
       border-radius: var(--radius-lg);
       padding: 1.5rem;
       box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
-      animation: alertPulse 2s infinite alternate;
     }
-
-    @keyframes alertPulse {
-      0% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
-      100% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.8); }
-    }
-
     .alert-header {
       color: #991b1b;
       font-size: 1.1rem;
@@ -104,126 +89,38 @@
       align-items: center;
       text-transform: uppercase;
     }
+    .alert-instructions { font-size: 0.8rem; color: #b91c1c; font-weight: 700; text-transform: none; }
+    .alert-table { width: 100%; border-collapse: collapse; background: #ffffff; border-radius: var(--radius-md); overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+    .alert-table th { background: #fee2e2; color: #991b1b; padding: 12px 14px; font-size: 0.8rem; text-transform: uppercase; text-align: left; }
+    .alert-table td { padding: 12px 14px; border-top: 1px solid #fca5a5; font-weight: 600; font-size: 0.9rem; color: #7f1d1d; }
+    .alert-table tr:hover { background-color: #fff5f5; }
 
-    .alert-instructions {
-      font-size: 0.8rem;
-      color: #b91c1c;
-      font-weight: 700;
-      text-transform: none;
-    }
+    .alert-status-select { padding: 4px 10px; border-radius: 6px; font-weight: 800; font-size: 0.85rem; outline: none; cursor: pointer; background: #ffffff; }
+    .alert-status-select.status-suspected { color: #c2410c; background: #ffedd5; border: 1.5px solid #f97316; }
+    .alert-status-select.status-confirmed { color: #991b1b; background: #fee2e2; border: 1.5px solid #ef4444; }
+    .btn-delete-case { background: #dc2626; color: #ffffff; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 800; font-size: 0.8rem; cursor: pointer; }
 
-    .alert-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #ffffff;
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .alert-table th {
-      background: #fee2e2;
-      color: #991b1b;
-      padding: 12px 14px;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      text-align: left;
-    }
-
-    .alert-table td {
-      padding: 12px 14px;
-      border-top: 1px solid #fca5a5;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: #7f1d1d;
-    }
-
-    .alert-table tr {
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    .alert-table tr:hover {
-      background-color: #fff5f5;
-    }
-
-    .alert-status-select {
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1.5px solid #ef4444;
-      font-weight: 800;
-      font-size: 0.85rem;
-      outline: none;
-      cursor: pointer;
-      background: #ffffff;
-    }
-
-    .alert-status-select.status-suspected {
-      color: #c2410c;
-      background: #ffedd5;
-      border-color: #f97316;
-    }
-
-    .alert-status-select.status-confirmed {
-      color: #991b1b;
-      background: #fee2e2;
-      border-color: #ef4444;
-    }
-
-    .btn-delete-case {
-      background: #dc2626;
-      color: #ffffff;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-weight: 800;
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: background-color 0.2s ease, transform 0.1s ease;
-    }
-
-    .btn-delete-case:hover {
-      background: #b91c1c;
-      transform: scale(1.03);
-    }
-
-    /* Main Grid */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-      gap: 1.75rem;
-    }
-
-    .card {
-      background: var(--card-bg);
-      border: 2px solid var(--card-border);
-      border-radius: var(--radius-lg);
-      padding: 1.75rem;
-      box-shadow: var(--card-glow);
-      transition: var(--transition);
-      display: flex;
-      flex-direction: column;
-    }
-    .card:hover { box-shadow: 0 0 25px rgba(0, 210, 255, 0.6), inset 0 0 15px rgba(0, 210, 255, 0.2); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.75rem; }
+    .card { background: var(--card-bg); border: 2px solid var(--card-border); border-radius: var(--radius-lg); padding: 1.75rem; box-shadow: var(--card-glow); display: flex; flex-direction: column; }
     .card h2 { font-size: 1.05rem; font-weight: 800; margin-bottom: 1.25rem; color: #0b2536; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid rgba(0, 210, 255, 0.3); padding-bottom: 0.6rem; }
     .form-group { margin-bottom: 1.1rem; }
     label { display: block; font-size: 0.725rem; font-weight: 800; color: #475569; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    input[type="number"], select { width: 100%; padding: 0.65rem 0.85rem; border-radius: var(--radius-md); border: 1.5px solid #cbd5e1; background: #ffffff; color: var(--text-dark); font-size: 0.9rem; font-weight: 600; outline: none; transition: var(--transition); }
+    input[type="number"], select { width: 100%; padding: 0.65rem 0.85rem; border-radius: var(--radius-md); border: 1.5px solid #cbd5e1; background: #ffffff; color: var(--text-dark); font-size: 0.9rem; font-weight: 600; outline: none; }
     input[type="number"]:focus, select:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.25); }
-    .checkbox-group { display: flex; align-items: center; background: #ffffff; padding: 0.65rem 0.85rem; border-radius: var(--radius-md); border: 1.5px solid #cbd5e1; cursor: pointer; }
-    input[type="checkbox"] { accent-color: var(--accent-cyan); width: 16px; height: 16px; margin-right: 0.65rem; cursor: pointer; }
     .form-submit-btn { width: 100%; margin-top: 0.5rem; }
-    .result-box { margin-top: 1.25rem; padding: 1rem; border-radius: var(--radius-md); background: #ffffff; border: 1.5px solid var(--accent-cyan); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); display: none; animation: fadeIn 0.3s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-    .result-box p { margin-bottom: 0.35rem; font-size: 0.875rem; font-weight: 600; color: var(--text-dark); display: flex; justify-content: space-between; align-items: center; }
-    .result-box p:last-child { margin-bottom: 0; }
-    .tier-indicator { font-weight: 800; font-size: 0.75rem; padding: 0.25rem 0.65rem; border-radius: 9999px; display: inline-block; text-transform: uppercase; letter-spacing: 0.04em; }
-    .tier-Green { color: var(--pastel-green-text); background: var(--pastel-green-bg); }
-    .tier-Yellow { color: var(--pastel-yellow-text); background: var(--pastel-yellow-bg); }
-    .tier-Orange { color: var(--pastel-orange-text); background: var(--pastel-orange-bg); }
-    .tier-Red { color: var(--pastel-red-text); background: var(--pastel-red-bg); }
-    hr { border: 0; height: 1.5px; background: rgba(0, 210, 255, 0.3); margin: 1.5rem 0; }
+    
+    /* Result Box Styling Fixes */
+    .result-box { margin-top: 1.25rem; padding: 1.25rem; border-radius: var(--radius-md); background: #ffffff; border: 1.5px solid var(--accent-cyan); display: none; }
+    .result-box .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+    .result-box .cause-block { font-size: 0.825rem; line-height: 1.4; color: var(--text-dark); background: #fff1f2; border-left: 3px solid #e11d48; padding: 8px 12px; border-radius: 4px; }
+    
+    .tier-indicator { font-weight: 800; font-size: 0.75rem; padding: 0.25rem 0.65rem; border-radius: 9999px; display: inline-block; text-transform: uppercase; }
+    .tier-GREEN, .tier-Green { color: var(--pastel-green-text); background: var(--pastel-green-bg); }
+    .tier-YELLOW, .tier-Yellow { color: var(--pastel-yellow-text); background: var(--pastel-yellow-bg); }
+    .tier-ORANGE, .tier-Orange { color: var(--pastel-orange-text); background: var(--pastel-orange-bg); }
+    .tier-RED, .tier-Red { color: var(--pastel-red-text); background: var(--pastel-red-bg); }
   </style>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
 
@@ -234,10 +131,8 @@
     </div>
     <div class="header-actions">
       <span id="api-status" class="status-badge status-offline">API Offline</span>
-      <a href="admindb.html">
-        <button type="button" class="btn btn-primary">
-          Relocate to Dashboard
-        </button>
+      <a href="user-dashboard.html">
+        <button type="button" class="btn btn-primary">View User Dashboard</button>
       </a>
     </div>
   </header>
@@ -245,8 +140,8 @@
   <div id="alert-container">
     <div class="alert-card">
       <div class="alert-header">
-        <span>⚠️ New Field Case Reported!</span>
-        <span class="alert-instructions">(Click on table row to select ward in Panel 1)</span>
+        <span>⚠️ Active User Case Reports</span>
+        <span class="alert-instructions">(Click on row to auto-select ward for lab entry)</span>
       </div>
       <table class="alert-table">
         <thead>
@@ -260,16 +155,14 @@
             <th>Action</th>
           </tr>
         </thead>
-        <tbody id="alert-table-body">
-          <!-- Populated dynamically -->
-        </tbody>
+        <tbody id="alert-table-body"></tbody>
       </table>
     </div>
   </div>
 
   <div class="grid" id="main-admin-grid">
     <div class="card">
-      <h2>1. Score Ward Risk</h2>
+      <h2>1. Predict & Store Ward Risk (pH / Chemical Entry)</h2>
       <form id="score-form">
         <div class="form-group">
           <label>Ward Name</label>
@@ -282,249 +175,221 @@
           </select>
         </div>
         <div class="form-group">
+          <label>pH Level (Ideal: 6.5 - 8.5)</label>
+          <input type="number" step="0.1" id="score-ph" value="5.8" required>
+        </div>
+        <div class="form-group">
           <label>Turbidity (NTU)</label>
-          <input type="number" step="0.1" id="score-turbidity" value="12.5" required>
+          <input type="number" step="0.1" id="score-turbidity" value="6.2" required>
         </div>
         <div class="form-group">
-          <label>pH Level</label>
-          <input type="number" step="0.1" id="score-ph" value="7.2" required>
+          <label>Total Dissolved Solids (TDS ppm)</label>
+          <input type="number" id="score-tds" value="620" required>
         </div>
         <div class="form-group">
-          <label>Population</label>
-          <input type="number" id="score-pop" value="5000" required>
+          <label>Free Chlorine (mg/L)</label>
+          <input type="number" step="0.01" id="score-chlorine" value="0.1" required>
         </div>
-        <div class="form-group">
-          <label>Active Case Count</label>
-          <input type="number" id="score-cases" value="8" required>
-        </div>
-        <div class="form-group checkbox-group">
-          <input type="checkbox" id="score-flag">
-          <label for="score-flag" style="margin:0; text-transform:none; font-weight: 700; font-size:0.85rem; cursor:pointer;">Contamination Flagged</label>
-        </div>
-        <button type="submit" class="btn btn-primary form-submit-btn">Calculate Risk Score</button>
+        <button type="submit" class="btn btn-primary form-submit-btn">Run ML Prediction & Update Map</button>
       </form>
       <div id="score-result" class="result-box"></div>
     </div>
 
     <div class="card">
-      <h2>2. Admin Actions & Retrain</h2>
-      <form id="confirm-form">
-        <div class="form-group">
-          <label>Ward ID</label>
-          <input type="number" id="conf-ward" value="101" required>
-        </div>
-        <div class="form-group">
-          <label>Assigned Risk Tier</label>
-          <select id="conf-tier">
-            <option value="Green">Green</option>
-            <option value="Yellow">Yellow</option>
-            <option value="Orange">Orange</option>
-            <option value="Red">Red</option>
-          </select>
-        </div>
-        <div class="form-group checkbox-group">
-          <input type="checkbox" id="conf-waterborne" checked>
-          <label for="conf-waterborne" style="margin:0; text-transform:none; font-weight: 700; font-size:0.85rem; cursor:pointer;">Confirmed Waterborne Outbreak</label>
-        </div>
-        <button type="submit" class="btn btn-secondary form-submit-btn">Save Admin Confirmation</button>
-      </form>
-      
-      <hr>
-      
-      <button id="retrain-btn" class="btn btn-primary form-submit-btn">Update Model</button>
-      <div id="admin-result" class="result-box"></div>
+      <h2>2. Live Logs & System Broadcast Status</h2>
+      <div id="logs-container" style="max-height: 380px; overflow-y: auto;">
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Waiting for laboratory submissions...</p>
+      </div>
     </div>
   </div>
 
-  <script>
-    const API_BASE = "http://localhost:8000";
+<script>
+  const API_BASE = "http://localhost:5000";
+  const socket = io(API_BASE);
 
-    const alertContainer = document.getElementById("alert-container");
-    const alertTableBody = document.getElementById("alert-table-body");
+  const alertContainer = document.getElementById("alert-container");
+  const alertTableBody = document.getElementById("alert-table-body");
+  const logsContainer = document.getElementById("logs-container");
 
-    // Real-Time Listener for storage changes from admindb.html
-    window.addEventListener("storage", (e) => {
-      if (e.key === "jalrakshak_field_reports") {
-        loadAlerts();
+  document.addEventListener("DOMContentLoaded", () => {
+    checkHealth();
+    fetchFieldReports();
+    fetchLogsHistory();
+  });
+
+  socket.on('ward_risk_updated', () => fetchLogsHistory());
+  socket.on('new_report_added', () => fetchFieldReports());
+  socket.on('report_status_updated', () => fetchFieldReports());
+
+  async function checkHealth() {
+    const badge = document.getElementById("api-status");
+    try {
+      const res = await fetch(`${API_BASE}/health`);
+      if (res.ok) {
+        badge.textContent = "API Online";
+        badge.className = "status-badge status-online";
+      } else throw new Error();
+    } catch {
+      badge.textContent = "API Offline";
+      badge.className = "status-badge status-offline";
+    }
+  }
+
+  function analyzeWaterCause(ph, turbidity, tds, chlorine) {
+    let reasons = [];
+    if (ph < 6.5) reasons.push("Acidic Contamination / Industrial Runoff (Low pH)");
+    if (ph > 8.5) reasons.push("Alkaline Chemical Leak / Excessive Treatment (High pH)");
+    if (turbidity > 5.0) reasons.push("Pipe Corrosion / Suspended Solids (High Turbidity)");
+    if (tds > 500) reasons.push("High Mineral Dissolution / Sewage Infiltration (Elevated TDS)");
+    if (chlorine < 0.2) reasons.push("Inadequate Disinfection / Pathogen Risk (Low Free Chlorine)");
+    if (chlorine > 2.0) reasons.push("Excessive Chlorination Hazard");
+
+    return reasons.length > 0 ? reasons.join(" & ") : "Normal Parameter Range";
+  }
+
+  async function fetchLogsHistory() {
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/lab-tests`);
+      const data = await res.json();
+      if (data.success && data.logs && data.logs.length > 0) {
+        logsContainer.innerHTML = data.logs.map(log => {
+          const cause = analyzeWaterCause(log.ph, log.turbidity, log.tds, log.chlorine);
+          return `
+            <div style="padding: 10px; border-bottom: 1px solid rgba(0,210,255,0.2); font-size:0.85rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong>${log.wardName}</strong>
+                <span class="tier-indicator tier-${log.predictedRiskTier}">${log.predictedRiskTier}</span>
+              </div>
+              <p style="color:var(--text-muted); margin-top:4px;">
+                pH: ${log.ph} | Turb: ${log.turbidity} NTU | TDS: ${log.tds} | Cl: ${log.chlorine}
+              </p>
+              <p style="color:#e11d48; font-weight:700; margin-top:2px;">
+                Cause: ${cause}
+              </p>
+              <small style="color:#94a3b8;">${new Date(log.timestamp).toLocaleTimeString()}</small>
+            </div>
+          `;
+        }).join('');
       }
-    });
+    } catch(err) { console.error("Could not fetch logs:", err); }
+  }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      loadAlerts();
-    });
+  async function fetchFieldReports() {
+    try {
+      const res = await fetch(`${API_BASE}/api/reports`);
+      const data = await res.json();
+      const reports = data.reports || [];
 
-    function loadAlerts() {
-      const reports = JSON.parse(localStorage.getItem("jalrakshak_field_reports")) || [];
-      
       if (reports.length === 0) {
         alertContainer.style.display = "none";
-        alertTableBody.innerHTML = "";
         return;
       }
 
       alertContainer.style.display = "block";
-      alertTableBody.innerHTML = reports.map((rep, index) => {
+      alertTableBody.innerHTML = reports.map((rep) => {
         const currentStatus = rep.status || "Suspected";
         const statusClass = currentStatus.toLowerCase() === "confirmed" ? "status-confirmed" : "status-suspected";
 
         return `
-          <tr data-index="${index}" data-location="${rep.location}">
+          <tr data-id="${rep._id}" data-location="${rep.location}">
             <td><strong>${rep.reportId}</strong></td>
-            <td>${rep.date}</td>
+            <td>${rep.date || 'N/A'}</td>
             <td>${rep.location}</td>
             <td>${rep.waterSource}</td>
             <td>${rep.riskFactors}</td>
             <td>
-              <select class="alert-status-select ${statusClass}" data-index="${index}">
+              <select class="alert-status-select ${statusClass}" data-id="${rep._id}">
                 <option value="Suspected" ${currentStatus === "Suspected" ? "selected" : ""}>Suspected</option>
                 <option value="Confirmed" ${currentStatus === "Confirmed" ? "selected" : ""}>Confirmed</option>
               </select>
             </td>
             <td>
-              <button type="button" class="btn-delete-case" data-index="${index}">Delete</button>
+              <button type="button" class="btn-delete-case" data-id="${rep._id}">Delete</button>
             </td>
           </tr>
         `;
       }).join('');
 
-      // Attach row click to select ward in Panel 1
       document.querySelectorAll("#alert-table-body tr").forEach(row => {
         row.addEventListener("click", (e) => {
-          if (e.target.tagName !== "SELECT" && e.target.tagName !== "BUTTON" && e.target.tagName !== "OPTION") {
+          if (!["SELECT", "BUTTON", "OPTION"].includes(e.target.tagName)) {
             const loc = row.getAttribute("data-location");
-            const scoreWardSelect = document.getElementById("score-ward");
-            if (scoreWardSelect && loc) {
-              for (let i = 0; i < scoreWardSelect.options.length; i++) {
-                if (scoreWardSelect.options[i].value === loc) {
-                  scoreWardSelect.selectedIndex = i;
-                  break;
-                }
-              }
+            const select = document.getElementById("score-ward");
+            for (let i = 0; i < select.options.length; i++) {
+              if (select.options[i].value === loc) { select.selectedIndex = i; break; }
             }
           }
         });
       });
 
-      // Attach change listeners to status dropdowns
       document.querySelectorAll(".alert-status-select").forEach(select => {
-        select.addEventListener("change", (e) => {
-          const idx = e.target.getAttribute("data-index");
-          const newStatus = e.target.value;
-          
-          let reports = JSON.parse(localStorage.getItem("jalrakshak_field_reports")) || [];
-          if (reports[idx]) {
-            reports[idx].status = newStatus;
-            localStorage.setItem("jalrakshak_field_reports", JSON.stringify(reports));
-          }
-          
-          e.target.className = `alert-status-select ${newStatus.toLowerCase() === "confirmed" ? "status-confirmed" : "status-suspected"}`;
+        select.addEventListener("change", async (e) => {
+          const id = e.target.getAttribute("data-id");
+          await fetch(`${API_BASE}/api/reports/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: e.target.value })
+          });
+          fetchFieldReports();
         });
       });
 
-      // Attach delete click handlers
       document.querySelectorAll(".btn-delete-case").forEach(btn => {
-        btn.addEventListener("click", (e) => {
+        btn.addEventListener("click", async (e) => {
           e.stopPropagation();
-          const idx = parseInt(e.target.getAttribute("data-index"), 10);
-          
-          let reports = JSON.parse(localStorage.getItem("jalrakshak_field_reports")) || [];
-          reports.splice(idx, 1);
-          localStorage.setItem("jalrakshak_field_reports", JSON.stringify(reports));
-          
-          loadAlerts();
+          const id = e.target.getAttribute("data-id");
+          await fetch(`${API_BASE}/api/reports/${id}`, { method: 'DELETE' });
+          fetchFieldReports();
         });
       });
-    }
 
-    async function checkHealth() {
-      const badge = document.getElementById("api-status");
-      if (!badge) return;
-      try {
-        const res = await fetch(`${API_BASE}/`);
-        if (res.ok) {
-          badge.textContent = "API Online";
-          badge.className = "status-badge status-online";
-        } else throw new Error();
-      } catch {
-        badge.textContent = "API Offline";
-        badge.className = "status-badge status-offline";
-      }
-    }
+    } catch (err) { console.error("Failed to load reports:", err); }
+  }
 
-    document.getElementById("score-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const body = {
-        ward_id: document.getElementById("score-ward").value,
-        turbidity: parseFloat(document.getElementById("score-turbidity").value),
-        ph: parseFloat(document.getElementById("score-ph").value),
-        population: parseInt(document.getElementById("score-pop").value, 10),
-        case_count: parseInt(document.getElementById("score-cases").value, 10),
-        contamination_flag: document.getElementById("score-flag").checked
-      };
+  document.getElementById("score-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const ph = parseFloat(document.getElementById("score-ph").value);
+    const turbidity = parseFloat(document.getElementById("score-turbidity").value);
+    const tds = parseFloat(document.getElementById("score-tds").value);
+    const chlorine = parseFloat(document.getElementById("score-chlorine").value);
 
-      try {
-        const res = await fetch(`${API_BASE}/score`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body)
-        });
-        const data = await res.json();
-        
+    const body = {
+      wardName: document.getElementById("score-ward").value,
+      ph: ph,
+      turbidity: turbidity,
+      tds: tds,
+      chlorine: chlorine
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/lab-tests`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        const predictedCause = data.cause || analyzeWaterCause(ph, turbidity, tds, chlorine);
+
         const out = document.getElementById("score-result");
         out.style.display = "block";
         out.innerHTML = `
-          <p>Risk Tier: <span class="tier-indicator tier-${data.risk_tier}">${data.risk_tier}</span></p>
-          <p>Score Points: <strong>${data.risk_score}</strong></p>
-          <p style="margin-top:0.5rem; color:var(--text-muted); display:block;"><strong>Action:</strong> ${data.recommended_action}</p>
+          <div class="result-header">
+            <strong style="font-size:0.9rem;">ML Predicted Tier:</strong>
+            <span class="tier-indicator tier-${data.prediction}">${data.prediction}</span>
+          </div>
+          <div class="cause-block">
+            <strong style="color:#b91c1c; display:block; margin-bottom:4px;">Primary Root Cause:</strong>
+            <span>${predictedCause}</span>
+          </div>
         `;
-      } catch (err) {
-        alert("Failed to connect to API server.");
+        fetchLogsHistory();
       }
-    });
+    } catch (err) { alert("Failed to connect to backend server."); }
+  });
+</script>
 
-    document.getElementById("confirm-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const body = {
-        ward_id: parseInt(document.getElementById("conf-ward").value, 10),
-        turbidity: 12.5,
-        ph: 7.2,
-        contamination_flag: true,
-        case_rate_per_1000: 1.6,
-        waterborne_symptom_ratio: 0.8,
-        risk_tier: document.getElementById("conf-tier").value,
-        is_waterborne: document.getElementById("conf-waterborne").checked
-      };
-
-      try {
-        const res = await fetch(`${API_BASE}/confirm`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body)
-        });
-        const data = await res.json();
-
-        const out = document.getElementById("admin-result");
-        out.style.display = "block";
-        out.innerHTML = `<p style="color: var(--pastel-green-text); font-weight:700; justify-content:flex-start;">${data.message}</p>`;
-      } catch (err) {
-        alert("Failed to connect to API server.");
-      }
-    });
-
-    document.getElementById("retrain-btn").addEventListener("click", async () => {
-      try {
-        const res = await fetch(`${API_BASE}/retrain`, { method: "POST" });
-        const data = await res.json();
-        
-        const out = document.getElementById("admin-result");
-        out.style.display = "block";
-        out.innerHTML = `<p style="color: var(--accent-cyan); font-weight:700; justify-content:flex-start;">Models updated successfully using ${data.total_rows_used} total rows!</p>`;
-      } catch (err) {
-        alert("Failed to connect to API server.");
-      }
-    });
-
-    checkHealth();
-  </script>
 </body>
 </html>

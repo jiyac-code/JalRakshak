@@ -1,34 +1,50 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 import RiskMap from "../components/RiskMap";
 import WardDetails from "../components/WardDetails";
 import CasesChart from "../components/CasesChart";
+import { AlertBell, AlertDrawer, processWardAlerts } from "../components/alertsys";
+
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:5000";
+const API_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
+
+const socket = io(SOCKET_URL);
 
 function Dashboard() {
   const [wards, setWards] = useState([]);
   const [selectedWard, setSelectedWard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [alerts, setAlerts] = useState([]);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const fetchWardSummary = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/wards/summary`);
+      if (!response.ok) throw new Error("Failed to load ward data.");
+      const data = await response.json();
+      const list = data.wards || [];
+      
+      setWards(list);
+      setAlerts((prev) => processWardAlerts(list, prev));
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/wards/summary")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch ward data");
-        }
+    fetchWardSummary();
 
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Ward data:", data);
+    // Real-time Socket.IO listeners
+    socket.on("new_report_added", fetchWardSummary);
+    socket.on("report_status_updated", fetchWardSummary);
 
-        setWards(data.wards || []);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching wards:", error);
-        setError(error.message);
-        setLoading(false);
-      });
+    return () => {
+      socket.off("new_report_added", fetchWardSummary);
+      socket.off("report_status_updated", fetchWardSummary);
+    };
   }, []);
 
   if (loading) {
@@ -37,7 +53,7 @@ function Dashboard() {
         <div className="loading-box">
           <div className="loading-icon">💧</div>
           <h2>Loading JalRakshak...</h2>
-          <p>Fetching ward risk information</p>
+          <p>Fetching real-time risk data</p>
         </div>
       </div>
     );
@@ -48,259 +64,117 @@ function Dashboard() {
       <div className="error-screen">
         <div className="error-box">
           <div className="error-icon">⚠️</div>
-
-          <h2>Unable to load dashboard</h2>
-
+          <h2>Dashboard Offline</h2>
           <p>{error}</p>
-
-          <p>
-            Make sure the JalRakshak backend is running on
-            port 5000.
-          </p>
+          <button className="btn btn-primary" onClick={fetchWardSummary}>
+            Retry Connection
+          </button>
         </div>
       </div>
     );
   }
 
-  const totalCases = wards.reduce(
-    (total, ward) => total + Number(ward.case_count || 0),
-    0
-  );
-
-  const highRiskWards = wards.filter((ward) => {
-    const risk = ward.risk_tier?.toUpperCase();
-
-    return risk === "RED" || risk === "ORANGE";
-  }).length;
+  const totalCases = wards.reduce((acc, ward) => acc + Number(ward.total_reported_cases || ward.case_count || 0), 0);
+  const highRiskWards = wards.filter((w) => ["RED", "ORANGE"].includes(w.risk_tier?.toUpperCase())).length;
 
   return (
     <div className="dashboard">
-
-      {/* HEADER */}
-
       <header className="dashboard-header">
-
         <div className="logo">
-
-          <div className="logo-icon">
-            💧
-          </div>
-
+          <div className="logo-icon">💧</div>
           <div>
             <h1>JalRakshak</h1>
-
-            <p>
-              Waterborne Disease Monitoring
-            </p>
+            <p>Waterborne Disease Monitoring</p>
           </div>
-
         </div>
-
-        <div className="admin-status">
-          <span className="online-dot"></span>
-
-          <span>
-            Admin Dashboard
-          </span>
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <AlertBell count={alerts.length} onClick={() => setIsDrawerOpen(true)} />
+          <div className="admin-status">
+            <span className="online-dot"></span>
+            <span>Admin Dashboard</span>
+          </div>
         </div>
-
       </header>
 
-
-      {/* MAIN CONTENT */}
+      <AlertDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        alerts={alerts}
+        onClear={() => setAlerts([])}
+      />
 
       <main className="dashboard-content">
-
-        {/* PAGE TITLE */}
-
         <section className="page-title">
-
           <div>
             <h2>Admin Dashboard</h2>
-
-            <p>
-              Monitor water quality and disease
-              risk across wards.
-            </p>
+            <p>Monitor water quality and disease risk across wards.</p>
           </div>
-
-          <div className="last-updated">
-            ● Live Monitoring
-          </div>
-
+          <div className="last-updated">● Live Monitoring</div>
         </section>
 
-
-        {/* STATISTICS */}
-
+        {/* Summary Statistics */}
         <section className="stats">
-
           <div className="stat-card">
-
-            <div className="stat-icon blue">
-              🦠
-            </div>
-
+            <div className="stat-icon blue">🦠</div>
             <div>
               <h3>Total Cases</h3>
-
-              <strong>
-                {totalCases}
-              </strong>
-
-              <p>
-                Reported cases
-              </p>
+              <strong>{totalCases}</strong>
+              <p>Reported cases</p>
             </div>
-
           </div>
-
-
           <div className="stat-card">
-
-            <div className="stat-icon teal">
-              📍
-            </div>
-
+            <div className="stat-icon teal">📍</div>
             <div>
               <h3>Wards Monitored</h3>
-
-              <strong>
-                {wards.length}
-              </strong>
-
-              <p>
-                Active locations
-              </p>
+              <strong>{wards.length}</strong>
+              <p>Active locations</p>
             </div>
-
           </div>
-
-
           <div className="stat-card">
-
-            <div className="stat-icon red">
-              ⚠️
-            </div>
-
+            <div className="stat-icon red">⚠️</div>
             <div>
               <h3>High Risk Wards</h3>
-
-              <strong>
-                {highRiskWards}
-              </strong>
-
-              <p>
-                Require attention
-              </p>
+              <strong>{highRiskWards}</strong>
+              <p>Require attention</p>
             </div>
-
           </div>
-
         </section>
 
-
-        {/* MAP */}
-
+        {/* Community Risk Map */}
         <section className="map-card">
-
           <div className="map-header">
-
             <div>
-              <h2>
-                📍 Community Risk Map
-              </h2>
-
-              <p>
-                Geographic distribution of
-                waterborne disease risk
-              </p>
+              <h2>📍 Community Risk Map</h2>
+              <p>Geographic distribution of waterborne disease risk</p>
             </div>
-
-            <span className="live-badge">
-              ● LIVE
-            </span>
-
+            <span className="live-badge">● LIVE</span>
           </div>
-
-
           <div className="map-container">
-
-            <RiskMap
-              wards={wards}
-              onWardSelect={setSelectedWard}
-            />
-
+            <RiskMap wards={wards} onWardSelect={(ward) => setSelectedWard(ward)} />
           </div>
-
-
-          {/* LEGEND */}
-
           <div className="risk-legend">
-
-            <span className="legend-title">
-              Risk Level
-            </span>
-
-            <span>
-              <i className="legend-dot green"></i>
-              Low
-            </span>
-
-            <span>
-              <i className="legend-dot yellow"></i>
-              Moderate
-            </span>
-
-            <span>
-              <i className="legend-dot orange"></i>
-              High
-            </span>
-
-            <span>
-              <i className="legend-dot red"></i>
-              Critical
-            </span>
-
+            <span className="legend-title">Risk Level</span>
+            <span><i className="legend-dot green"></i> Low</span>
+            <span><i className="legend-dot yellow"></i> Moderate</span>
+            <span><i className="legend-dot orange"></i> High</span>
+            <span><i className="legend-dot red"></i> Critical</span>
           </div>
-
         </section>
 
+        {/* Selected Ward Details Section */}
+        {selectedWard && <WardDetails ward={selectedWard} />}
 
-        {/* SELECTED WARD */}
-
-        {selectedWard && (
-          <WardDetails
-            ward={selectedWard}
-          />
-        )}
-
-
-        {/* CHART */}
-
+        {/* Historical Disease Trend Chart */}
         <section className="chart-card">
-
           <div className="section-heading">
-
             <div>
-              <h2>
-                📈 Disease Cases Over Time
-              </h2>
-
-              <p>
-                Reported cases during the
-                monitoring period
-              </p>
+              <h2>📈 Disease Cases Over Time</h2>
+              <p>Reported cases during the monitoring period</p>
             </div>
-
           </div>
-
           <CasesChart />
-
         </section>
-
       </main>
-
     </div>
   );
 }
