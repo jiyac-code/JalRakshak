@@ -126,7 +126,6 @@
       100% { box-shadow: 0 0 24px rgba(220, 38, 38, 0.95); }
     }
 
-    /* Alert Messages Container & Close Button Styling */
     .alert-panel-wrapper {
       background: var(--card-bg);
       border-radius: var(--radius-droplet);
@@ -172,27 +171,10 @@
       opacity: 1;
       transform: scale(1.15);
     }
-    .alert-card.yellow {
-      background-color: #fef3c7;
-      border: 2px solid #f59e0b;
-      color: #92400e;
-    }
-    .alert-card.orange {
-      background-color: #ffedd5;
-      border: 2px solid #f97316;
-      color: #9a3412;
-    }
-    .alert-card.red {
-      background-color: #fee2e2;
-      border: 2px solid #ef4444;
-      color: #991b1b;
-      animation: alertPulse 2s infinite alternate;
-    }
-    .alert-card.default {
-      background-color: #f1f5f9;
-      border: 2px solid #cbd5e1;
-      color: #64748b;
-    }
+    .alert-card.yellow { background-color: #fef3c7; border: 2px solid #f59e0b; color: #92400e; }
+    .alert-card.orange { background-color: #ffedd5; border: 2px solid #f97316; color: #9a3412; }
+    .alert-card.red { background-color: #fee2e2; border: 2px solid #ef4444; color: #991b1b; animation: alertPulse 2s infinite alternate; }
+    .alert-card.default { background-color: #f1f5f9; border: 2px solid #cbd5e1; color: #64748b; }
   </style>
 </head>
 <body>
@@ -299,7 +281,6 @@
     <p id="bottom-alert-text">High contamination risk detected in monitored wards. Avoid consuming untreated tap water.</p>
   </div>
 
-  <!-- Alert Messages Add-on Section -->
   <div class="alert-panel-wrapper">
     <div class="card-header" style="margin-bottom: 0;">
       <h2>Alert Messages</h2>
@@ -321,7 +302,6 @@
   let map = null, mapMarkersLayer = null;
   let initialDropdownsPopulated = false;
 
-  // Local storage for dynamically added alert messages
   const liveAlertMessages = [];
 
   function removeAlertMessage(id) {
@@ -384,7 +364,7 @@
   document.getElementById('cancel-report-btn').addEventListener('click', () => reportSection.classList.remove('active'));
 
   function initLeafletMap() {
-    map = L.map('leaflet-map').setView([19.19, 73.00], 11);
+    map = L.map('leaflet-map').setView([19.1972, 73.0120], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(map);
     mapMarkersLayer = L.layerGroup().addTo(map);
   }
@@ -402,7 +382,9 @@
     try {
       const res = await fetch(`${API_BASE}/api/wards/summary`);
       const data = await res.json();
-      const wards = data.wards || [];
+      
+      // Support array directly or object wrapper { wards: [...] }
+      const wards = Array.isArray(data) ? data : (data.wards || []);
 
       mapMarkersLayer.clearLayers();
       let criticalWards = [];
@@ -421,15 +403,29 @@
 
       wards.forEach(ward => {
         const color = getRiskColor(ward.risk_tier);
-        const lat = parseFloat(ward.latitude);
-        const lng = parseFloat(ward.longitude);
         
+        // FIX: Reads lat/lng fallback for both standard format variations
+        const lat = parseFloat(ward.lat !== undefined ? ward.lat : ward.latitude);
+        const lng = parseFloat(ward.lng !== undefined ? ward.lng : ward.longitude);
+        const cases = ward.case_count !== undefined ? ward.case_count : (ward.total_reported_cases || 0);
+
         if (!isNaN(lat) && !isNaN(lng)) {
           markerBounds.push([lat, lng]);
+
           const circle = L.circleMarker([lat, lng], {
-            color: color, fillColor: color, fillOpacity: 0.8, radius: 10
+            color: '#ffffff',
+            weight: 2,
+            fillColor: color,
+            fillOpacity: 0.85,
+            radius: 10
           });
-          circle.bindPopup(`<strong>${ward.name}</strong><br>Status Tier: <b>${ward.risk_tier}</b><br>Field Reports: ${ward.total_reported_cases}`);
+
+          circle.bindPopup(`
+            <strong>${ward.name}</strong><br>
+            Status Tier: <b>${ward.risk_tier}</b><br>
+            Field Cases: ${cases}
+          `);
+
           mapMarkersLayer.addLayer(circle);
         }
 
@@ -442,8 +438,12 @@
         }
       });
 
-      if (markerBounds.length > 0) {
-        map.fitBounds(markerBounds, { padding: [40, 40] });
+      // Recalculate container bounds and re-align view over markers
+      if (map) {
+        map.invalidateSize();
+        if (markerBounds.length > 0) {
+          map.fitBounds(markerBounds, { padding: [40, 40] });
+        }
       }
 
       document.getElementById('alert-count-val').innerText = criticalWards.length;
@@ -470,7 +470,7 @@
       
       const res = await fetch(`${API_BASE}/api/reports${query}`);
       const data = await res.json();
-      const reports = data.reports || [];
+      const reports = Array.isArray(data) ? data : (data.reports || []);
 
       const tableBody = document.getElementById('case-table-body');
       if (reports.length === 0) {
@@ -480,13 +480,13 @@
 
       tableBody.innerHTML = reports.map(r => `
         <tr>
-          <td style="color:#0284c7; font-weight:800;">${r.reportId}</td>
+          <td style="color:#0284c7; font-weight:800;">${r.reportId || r.id || 'N/A'}</td>
           <td>${r.date || 'Just Now'}</td>
-          <td>${r.location}</td>
-          <td>${r.waterSource}</td>
-          <td>${r.riskFactors}</td>
+          <td>${r.location || r.ward_name || 'Unknown'}</td>
+          <td>${r.waterSource || r.water_source || 'Unspecified'}</td>
+          <td>${Array.isArray(r.riskFactors) ? r.riskFactors.join(', ') : (r.riskFactors || 'None')}</td>
           <td><span class="badge ${r.riskLevel === 'High' ? 'risk-high' : 'risk-low'}">${r.riskLevel || 'Low'}</span></td>
-          <td><span class="badge ${r.status === 'Confirmed' ? 'confirmed' : 'suspected'}">${r.status}</span></td>
+          <td><span class="badge ${r.status === 'Confirmed' ? 'confirmed' : 'suspected'}">${r.status || 'Suspected'}</span></td>
         </tr>
       `).join('');
     } catch (err) { console.error("Table load error:", err); }
@@ -520,10 +520,8 @@
 
       const result = await response.json();
 
-      if (response.ok && result.success) {
-        // Yellow alert notification added on submission
+      if (response.ok && (result.success || response.status === 201)) {
         addAlertMessage('yellow', `SUSPECT CASE REPORTED: A field case report has been submitted for ${selectedWard}. Region is currently in suspected status.`);
-        
         alert("Field report submitted successfully!");
         this.reset();
         reportSection.classList.remove('active');

@@ -3,6 +3,8 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 const { pool } = require('./db');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -16,17 +18,37 @@ const io = new Server(server, {
   cors: { origin: "*", methods: ["GET", "POST", "PATCH", "DELETE"] }
 });
 
-const DEFAULT_WARDS = [
-  { name: "Ward 1 - Balkum", lat: 19.22, lng: 72.98 },
-  { name: "Ward 2 - Majiwada", lat: 19.20, lng: 72.97 },
-  { name: "Ward 3 - Vartak Nagar", lat: 19.21, lng: 72.96 },
-  { name: "Ward 4 - Naupada", lat: 19.18, lng: 72.97 },
-  { name: "Ward 5 - Kopri", lat: 19.17, lng: 72.98 },
-  { name: "Ward 6 - Uthalsar", lat: 19.19, lng: 72.98 },
-  { name: "Ward 7 - Kalwa", lat: 19.19, lng: 73.00 },
-  { name: "Ward 8 - Mumbra", lat: 19.17, lng: 73.02 },
-  { name: "Ward 9 - Diva", lat: 19.18, lng: 73.04 }
-];
+// Coordinate resolver to match any string variations in DB or fallback lookup
+function getWardCoordinates(wardName) {
+  if (!wardName) return { lat: 19.20, lng: 72.97 };
+
+  const wardMap = [
+    { name: "balkum", lat: 19.22, lng: 72.98 },
+    { name: "majiwada", lat: 19.20, lng: 72.97 },
+    { name: "vartak", lat: 19.2020, lng: 72.9670 },
+    { name: "naupada", lat: 19.1918, lng: 72.9715 },
+    { name: "kopri", lat: 19.17, lng: 72.98 },
+    { name: "uthalsar", lat: 19.19, lng: 72.98 },
+    { name: "kalwa", lat: 19.1972, lng: 73.0120 },
+    { name: "mumbra", lat: 19.1857, lng: 73.0284 },
+    { name: "diva", lat: 19.18, lng: 73.04 },
+    { name: "kausa", lat: 19.2010, lng: 73.0310 }
+  ];
+
+  const lower = wardName.toLowerCase();
+  const match = wardMap.find(w => lower.includes(w.name));
+
+  if (match) {
+    return { lat: match.lat, lng: match.lng };
+  }
+
+  // Fallback: Generate slight offset so unmapped wards don't overlap
+  const hash = wardName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return {
+    lat: 19.18 + (hash % 10) * 0.005,
+    lng: 72.96 + (hash % 8) * 0.005
+  };
+}
 
 pool.connect(async (err, client, release) => {
   if (err) {
@@ -84,36 +106,70 @@ app.get('/health', (req, res) => res.status(200).send('OK'));
 
 app.get('/api/wards/summary', async (req, res) => {
   try {
+    // 1. Check multiple paths for dataset.json to prevent silent read failures
+    let datasetPath = path.join(__dirname, 'dataset.json');
+    if (!fs.existsSync(datasetPath)) {
+      datasetPath = path.join(__dirname, '..', 'dataset.json');
+    }
+
+    let jsonWards = [];
+    if (fs.existsSync(datasetPath)) {
+      const rawData = fs.readFileSync(datasetPath, 'utf8');
+      const parsed = JSON.parse(rawData);
+      jsonWards = parsed.wards || [];
+    }
+
+    // Hardcoded safety net if dataset.json is missing or unreadable
+    if (jsonWards.length === 0) {
+      jsonWards = [
+        { id: 1, name: "Ward 7 - Kalwa", risk_tier: "Yellow", case_count: 4, lat: 19.1972, lng: 73.0120 },
+        { id: 2, name: "Ward 12 - Mumbra", risk_tier: "Red", case_count: 18, lat: 19.1857, lng: 73.0284 },
+        { id: 3, name: "Ward 15 - Vartak Nagar", risk_tier: "Green", case_count: 1, lat: 19.2020, lng: 72.9670 },
+        { id: 4, name: "Ward 4 - Naupada", risk_tier: "Green", case_count: 0, lat: 19.1918, lng: 72.9715 },
+        { id: 5, name: "Ward 9 - Kausa", risk_tier: "Orange", case_count: 9, lat: 19.2010, lng: 73.0310 }
+      ];
+    }
+
+    // 2. Fetch active DB readings & report counts
     const readings = await pool.query(`
-      SELECT DISTINCT ON (ward_name) 
-        ward_name, 
-        risk_tier
+      SELECT DISTINCT ON (ward_name) ward_name, risk_tier 
       FROM water_readings 
+      WHERE ward_name IS NOT NULL AND ward_name != 'null'
       ORDER BY ward_name, created_at DESC
     `);
 
     const cases = await pool.query(`
       SELECT location, COUNT(*) AS total_cases 
-      FROM reports GROUP BY location
+      FROM reports 
+      WHERE location IS NOT NULL 
+      GROUP BY location
     `);
 
-    const riskMap = {};
-    readings.rows.forEach(r => { riskMap[r.ward_name] = r.risk_tier; });
+    const dbRiskMap = {};
+    readings.rows.forEach(r => { dbRiskMap[r.ward_name] = r.risk_tier; });
 
     const caseMap = {};
     cases.rows.forEach(c => { caseMap[c.location] = parseInt(c.total_cases); });
 
-    const wards = DEFAULT_WARDS.map(w => ({
-      name: w.name,
-      risk_tier: riskMap[w.name] || 'GREEN',
-      latitude: w.lat,
-      longitude: w.lng,
-      total_reported_cases: caseMap[w.name] || 0
-    }));
+    // 3. Construct unified ward response with mapped coordinates & risk normalization
+    const wards = jsonWards.map(w => {
+      const resolvedCoords = getWardCoordinates(w.name);
+      const latitude = parseFloat(w.lat || w.latitude || resolvedCoords.lat);
+      const longitude = parseFloat(w.lng || w.longitude || resolvedCoords.lng);
+
+      return {
+        id: w.id,
+        name: w.name,
+        risk_tier: (dbRiskMap[w.name] || w.risk_tier || 'GREEN').toUpperCase(),
+        latitude,
+        longitude,
+        total_reported_cases: (w.case_count || 0) + (caseMap[w.name] || 0)
+      };
+    });
 
     res.json({ success: true, wards });
   } catch (err) {
-    console.error('Error fetching ward summary:', err);
+    console.error('Error serving ward summary:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
@@ -180,32 +236,6 @@ app.get('/api/reports', async (req, res) => {
     queryText += ` ORDER BY created_at DESC`;
 
     const result = await pool.query(queryText, queryParams);
-
-    if (result.rows.length === 0 && (!location || location === 'ALL')) {
-      const sampleReports = [
-        {
-          _id: 1,
-          reportId: "REP-1024",
-          date: new Date().toISOString().split('T')[0] + " 10:30 AM",
-          location: "Ward 4 - Naupada",
-          waterSource: "Public Tap",
-          riskFactors: "Dirty / Muddy Water, Family Members Ill",
-          riskLevel: "High",
-          status: "Confirmed"
-        },
-        {
-          _id: 2,
-          reportId: "REP-1025",
-          date: new Date().toISOString().split('T')[0] + " 11:15 AM",
-          location: "Ward 7 - Kalwa",
-          waterSource: "Borewell",
-          riskFactors: "Waterlogging",
-          riskLevel: "Low",
-          status: "Suspected"
-        }
-      ];
-      return res.json({ success: true, reports: sampleReports });
-    }
 
     res.json({ success: true, reports: result.rows });
   } catch (err) {
