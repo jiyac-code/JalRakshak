@@ -8,55 +8,34 @@
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 
     :root {
-      /* JalRakshak Water Theme Color Palette */
       --bg-dark: #071b26;
       --bg-image: radial-gradient(circle at 50% 30%, rgba(0, 150, 214, 0.25) 0%, rgba(7, 27, 38, 0.95) 100%), 
                   url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=2000&q=80');
-      
-      /* Glowing Panels & Borders */
       --card-bg: rgba(240, 246, 250, 0.92);
       --card-border: #00d2ff;
       --card-glow: 0 0 15px rgba(0, 210, 255, 0.4), inset 0 0 15px rgba(0, 210, 255, 0.15);
       --header-bg: #0b2536;
-
-      /* UI Accents */
       --accent-cyan: #00a8e8;
       --accent-hover: #0086bc;
       --accent-glow: rgba(0, 168, 232, 0.4);
-
-      /* Typography */
       --text-dark: #0f172a;
       --text-muted: #475569;
       --text-light: #ffffff;
-
-      /* Status Badges & Pills */
       --pastel-green-bg: #dcfce7;
       --pastel-green-text: #15803d;
-
       --pastel-yellow-bg: #fef9c3;
       --pastel-yellow-text: #a16207;
-
       --pastel-orange-bg: #ffedd5;
       --pastel-orange-text: #c2410c;
-
       --pastel-red-bg: #fee2e2;
       --pastel-red-text: #b91c1c;
-
-      /* Radii & Transitions */
       --radius-lg: 16px;
       --radius-md: 10px;
       --radius-sm: 6px;
       --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
     body {
       background: var(--bg-image);
       background-size: cover;
@@ -69,7 +48,6 @@
       min-height: 100vh;
     }
 
-    /* Header Section */
     header {
       display: flex;
       justify-content: space-between;
@@ -81,117 +59,141 @@
       border-radius: var(--radius-lg);
       box-shadow: var(--card-glow);
     }
-
-    .brand-title {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .brand-title h1 {
-      font-size: 1.75rem;
-      font-weight: 900;
-      letter-spacing: -0.02em;
-      color: var(--text-light);
-      text-transform: uppercase;
-      line-height: 1;
-    }
-
-    .brand-title .subtitle {
-      font-size: 0.75rem;
-      font-weight: 800;
-      color: var(--accent-cyan);
-      letter-spacing: 0.12em;
-      margin-top: 4px;
-      text-transform: uppercase;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    /* Action Buttons */
-    .btn {
-      padding: 0.65rem 1.25rem;
-      border: none;
-      border-radius: var(--radius-md);
-      font-weight: 800;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: var(--transition);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-
-    .btn-primary {
-      background: var(--accent-cyan);
-      color: #ffffff;
-      box-shadow: 0 4px 12px var(--accent-glow);
-    }
-
-    .btn-primary:hover {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary {
-      background: #ffffff;
-      color: #0b2536;
-      border: 1px solid #cbd5e1;
-    }
-
-    .btn-secondary:hover {
-      background: #f1f5f9;
-      transform: translateY(-1px);
-    }
-
-    /* Status Badge */
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.45rem 0.9rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .status-badge::before {
-      content: '';
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-
-    .status-online {
-      background: #dcfce7;
-      color: #15803d;
-      border: 1px solid #86efac;
-    }
+    .brand-title h1 { font-size: 1.75rem; font-weight: 900; letter-spacing: -0.02em; color: var(--text-light); text-transform: uppercase; line-height: 1; }
+    .brand-title .subtitle { font-size: 0.75rem; font-weight: 800; color: var(--accent-cyan); letter-spacing: 0.12em; margin-top: 4px; text-transform: uppercase; }
+    .header-actions { display: flex; align-items: center; gap: 1rem; }
+    .btn { padding: 0.65rem 1.25rem; border: none; border-radius: var(--radius-md); font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: var(--transition); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .btn-primary { background: var(--accent-cyan); color: #ffffff; box-shadow: 0 4px 12px var(--accent-glow); }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+    .btn-secondary { background: #ffffff; color: #0b2536; border: 1px solid #cbd5e1; }
+    .btn-secondary:hover { background: #f1f5f9; transform: translateY(-1px); }
+    .status-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.9rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
+    .status-badge::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+    .status-online { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
     .status-online::before { background: #22c55e; }
-
-    .status-offline {
-      background: #fee2e2;
-      color: #b91c1c;
-      border: 1px solid #fca5a5;
-    }
+    .status-offline { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
     .status-offline::before { background: #ef4444; }
 
-    /* Grid Layout */
+    /* Dynamic Alert Section */
+    #alert-container {
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .alert-card {
+      background: rgba(254, 242, 242, 0.95);
+      border: 2px solid #ef4444;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+      animation: alertPulse 2s infinite alternate;
+    }
+
+    @keyframes alertPulse {
+      0% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+      100% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.8); }
+    }
+
+    .alert-header {
+      color: #991b1b;
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-transform: uppercase;
+    }
+
+    .alert-instructions {
+      font-size: 0.8rem;
+      color: #b91c1c;
+      font-weight: 700;
+      text-transform: none;
+    }
+
+    .alert-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .alert-table th {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 12px 14px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      text-align: left;
+    }
+
+    .alert-table td {
+      padding: 12px 14px;
+      border-top: 1px solid #fca5a5;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #7f1d1d;
+    }
+
+    .alert-table tr {
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .alert-table tr:hover {
+      background-color: #fff5f5;
+    }
+
+    .alert-status-select {
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1.5px solid #ef4444;
+      font-weight: 800;
+      font-size: 0.85rem;
+      outline: none;
+      cursor: pointer;
+      background: #ffffff;
+    }
+
+    .alert-status-select.status-suspected {
+      color: #c2410c;
+      background: #ffedd5;
+      border-color: #f97316;
+    }
+
+    .alert-status-select.status-confirmed {
+      color: #991b1b;
+      background: #fee2e2;
+      border-color: #ef4444;
+    }
+
+    .btn-delete-case {
+      background: #dc2626;
+      color: #ffffff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .btn-delete-case:hover {
+      background: #b91c1c;
+      transform: scale(1.03);
+    }
+
+    /* Main Grid */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
       gap: 1.75rem;
     }
 
-    /* Cards (JalRakshak Cyan Border Glow) */
     .card {
       background: var(--card-bg);
       border: 2px solid var(--card-border);
@@ -202,131 +204,25 @@
       display: flex;
       flex-direction: column;
     }
-
-    .card:hover {
-      box-shadow: 0 0 25px rgba(0, 210, 255, 0.6), inset 0 0 15px rgba(0, 210, 255, 0.2);
-    }
-
-    .card h2 {
-      font-size: 1.05rem;
-      font-weight: 800;
-      margin-bottom: 1.25rem;
-      color: #0b2536;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      border-bottom: 2px solid rgba(0, 210, 255, 0.3);
-      padding-bottom: 0.6rem;
-    }
-
-    /* Forms & Controls */
-    .form-group {
-      margin-bottom: 1.1rem;
-    }
-
-    label {
-      display: block;
-      font-size: 0.725rem;
-      font-weight: 800;
-      color: #475569;
-      margin-bottom: 0.4rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    input[type="number"], select {
-      width: 100%;
-      padding: 0.65rem 0.85rem;
-      border-radius: var(--radius-md);
-      border: 1.5px solid #cbd5e1;
-      background: #ffffff;
-      color: var(--text-dark);
-      font-size: 0.9rem;
-      font-weight: 600;
-      outline: none;
-      transition: var(--transition);
-    }
-
-    input[type="number"]:focus, select:focus {
-      border-color: var(--accent-cyan);
-      box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.25);
-    }
-
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      background: #ffffff;
-      padding: 0.65rem 0.85rem;
-      border-radius: var(--radius-md);
-      border: 1.5px solid #cbd5e1;
-      cursor: pointer;
-    }
-
-    input[type="checkbox"] {
-      accent-color: var(--accent-cyan);
-      width: 16px;
-      height: 16px;
-      margin-right: 0.65rem;
-      cursor: pointer;
-    }
-
-    .form-submit-btn {
-      width: 100%;
-      margin-top: 0.5rem;
-    }
-
-    /* Results Card */
-    .result-box {
-      margin-top: 1.25rem;
-      padding: 1rem;
-      border-radius: var(--radius-md);
-      background: #ffffff;
-      border: 1.5px solid var(--accent-cyan);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-      display: none;
-      animation: fadeIn 0.3s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .result-box p {
-      margin-bottom: 0.35rem;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--text-dark);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .result-box p:last-child {
-      margin-bottom: 0;
-    }
-
-    /* Risk Tier Badges */
-    .tier-indicator {
-      font-weight: 800;
-      font-size: 0.75rem;
-      padding: 0.25rem 0.65rem;
-      border-radius: 9999px;
-      display: inline-block;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
+    .card:hover { box-shadow: 0 0 25px rgba(0, 210, 255, 0.6), inset 0 0 15px rgba(0, 210, 255, 0.2); }
+    .card h2 { font-size: 1.05rem; font-weight: 800; margin-bottom: 1.25rem; color: #0b2536; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 2px solid rgba(0, 210, 255, 0.3); padding-bottom: 0.6rem; }
+    .form-group { margin-bottom: 1.1rem; }
+    label { display: block; font-size: 0.725rem; font-weight: 800; color: #475569; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    input[type="number"], select { width: 100%; padding: 0.65rem 0.85rem; border-radius: var(--radius-md); border: 1.5px solid #cbd5e1; background: #ffffff; color: var(--text-dark); font-size: 0.9rem; font-weight: 600; outline: none; transition: var(--transition); }
+    input[type="number"]:focus, select:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.25); }
+    .checkbox-group { display: flex; align-items: center; background: #ffffff; padding: 0.65rem 0.85rem; border-radius: var(--radius-md); border: 1.5px solid #cbd5e1; cursor: pointer; }
+    input[type="checkbox"] { accent-color: var(--accent-cyan); width: 16px; height: 16px; margin-right: 0.65rem; cursor: pointer; }
+    .form-submit-btn { width: 100%; margin-top: 0.5rem; }
+    .result-box { margin-top: 1.25rem; padding: 1rem; border-radius: var(--radius-md); background: #ffffff; border: 1.5px solid var(--accent-cyan); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); display: none; animation: fadeIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .result-box p { margin-bottom: 0.35rem; font-size: 0.875rem; font-weight: 600; color: var(--text-dark); display: flex; justify-content: space-between; align-items: center; }
+    .result-box p:last-child { margin-bottom: 0; }
+    .tier-indicator { font-weight: 800; font-size: 0.75rem; padding: 0.25rem 0.65rem; border-radius: 9999px; display: inline-block; text-transform: uppercase; letter-spacing: 0.04em; }
     .tier-Green { color: var(--pastel-green-text); background: var(--pastel-green-bg); }
     .tier-Yellow { color: var(--pastel-yellow-text); background: var(--pastel-yellow-bg); }
     .tier-Orange { color: var(--pastel-orange-text); background: var(--pastel-orange-bg); }
     .tier-Red { color: var(--pastel-red-text); background: var(--pastel-red-bg); }
-
-    hr {
-      border: 0;
-      height: 1.5px;
-      background: rgba(0, 210, 255, 0.3);
-      margin: 1.5rem 0;
-    }
+    hr { border: 0; height: 1.5px; background: rgba(0, 210, 255, 0.3); margin: 1.5rem 0; }
   </style>
 </head>
 <body>
@@ -334,7 +230,7 @@
   <header>
     <div class="brand-title">
       <h1>JalRakshak</h1>
-      <span class="subtitle">Admin Risk Assessment </span>
+      <span class="subtitle">Admin Risk Assessment</span>
     </div>
     <div class="header-actions">
       <span id="api-status" class="status-badge status-offline">API Offline</span>
@@ -346,11 +242,45 @@
     </div>
   </header>
 
-  <div class="grid">
-    <!-- PANEL 1: /score -->
+  <div id="alert-container">
+    <div class="alert-card">
+      <div class="alert-header">
+        <span>⚠️ New Field Case Reported!</span>
+        <span class="alert-instructions">(Click on table row to select ward in Panel 1)</span>
+      </div>
+      <table class="alert-table">
+        <thead>
+          <tr>
+            <th>Report ID</th>
+            <th>Date</th>
+            <th>Ward / Location</th>
+            <th>Water Source</th>
+            <th>Observed Risks</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="alert-table-body">
+          <!-- Populated dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid" id="main-admin-grid">
     <div class="card">
       <h2>1. Score Ward Risk</h2>
       <form id="score-form">
+        <div class="form-group">
+          <label>Ward Name</label>
+          <select id="score-ward" required>
+            <option value="Ward 7 - Kalwa">Ward 7 - Kalwa</option>
+            <option value="Ward 12 - Mumbra">Ward 12 - Mumbra</option>
+            <option value="Ward 15 - Vartak Nagar">Ward 15 - Vartak Nagar</option>
+            <option value="Ward 4 - Naupada">Ward 4 - Naupada</option>
+            <option value="Ward 9 - Kausa">Ward 9 - Kausa</option>
+          </select>
+        </div>
         <div class="form-group">
           <label>Turbidity (NTU)</label>
           <input type="number" step="0.1" id="score-turbidity" value="12.5" required>
@@ -376,34 +306,8 @@
       <div id="score-result" class="result-box"></div>
     </div>
 
-    <!-- PANEL 2: /predict-cause -->
     <div class="card">
-      <h2>2. Predict Waterborne Cause</h2>
-      <form id="cause-form">
-        <div class="form-group">
-          <label>Ward ID</label>
-          <input type="number" id="cause-ward" value="101" required>
-        </div>
-        <div class="form-group">
-          <label>Turbidity (NTU)</label>
-          <input type="number" step="0.1" id="cause-turbidity" value="15.0" required>
-        </div>
-        <div class="form-group">
-          <label>Symptom Ratio (0.0 – 1.0)</label>
-          <input type="number" step="0.01" min="0" max="1" id="cause-ratio" value="0.75" required>
-        </div>
-        <div class="form-group checkbox-group">
-          <input type="checkbox" id="cause-flag" checked>
-          <label for="cause-flag" style="margin:0; text-transform:none; font-weight: 700; font-size:0.85rem; cursor:pointer;">Contamination Flagged</label>
-        </div>
-        <button type="submit" class="btn btn-primary form-submit-btn">Predict Cause</button>
-      </form>
-      <div id="cause-result" class="result-box"></div>
-    </div>
-
-    <!-- PANEL 3: Admin Confirmation & Retraining -->
-    <div class="card">
-      <h2>3. Admin Actions & Retrain</h2>
+      <h2>2. Admin Actions & Retrain</h2>
       <form id="confirm-form">
         <div class="form-group">
           <label>Ward ID</label>
@@ -427,7 +331,7 @@
       
       <hr>
       
-      <button id="retrain-btn" class="btn btn-primary form-submit-btn">Trigger Model Retraining</button>
+      <button id="retrain-btn" class="btn btn-primary form-submit-btn">Update Model</button>
       <div id="admin-result" class="result-box"></div>
     </div>
   </div>
@@ -435,7 +339,103 @@
   <script>
     const API_BASE = "http://localhost:8000";
 
-    // Health check on load
+    const alertContainer = document.getElementById("alert-container");
+    const alertTableBody = document.getElementById("alert-table-body");
+
+    // Real-Time Listener for storage changes from admindb.html
+    window.addEventListener("storage", (e) => {
+      if (e.key === "jalrakshak_field_reports") {
+        loadAlerts();
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadAlerts();
+    });
+
+    function loadAlerts() {
+      const reports = JSON.parse(localStorage.getItem("jalrakshak_field_reports")) || [];
+      
+      if (reports.length === 0) {
+        alertContainer.style.display = "none";
+        alertTableBody.innerHTML = "";
+        return;
+      }
+
+      alertContainer.style.display = "block";
+      alertTableBody.innerHTML = reports.map((rep, index) => {
+        const currentStatus = rep.status || "Suspected";
+        const statusClass = currentStatus.toLowerCase() === "confirmed" ? "status-confirmed" : "status-suspected";
+
+        return `
+          <tr data-index="${index}" data-location="${rep.location}">
+            <td><strong>${rep.reportId}</strong></td>
+            <td>${rep.date}</td>
+            <td>${rep.location}</td>
+            <td>${rep.waterSource}</td>
+            <td>${rep.riskFactors}</td>
+            <td>
+              <select class="alert-status-select ${statusClass}" data-index="${index}">
+                <option value="Suspected" ${currentStatus === "Suspected" ? "selected" : ""}>Suspected</option>
+                <option value="Confirmed" ${currentStatus === "Confirmed" ? "selected" : ""}>Confirmed</option>
+              </select>
+            </td>
+            <td>
+              <button type="button" class="btn-delete-case" data-index="${index}">Delete</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // Attach row click to select ward in Panel 1
+      document.querySelectorAll("#alert-table-body tr").forEach(row => {
+        row.addEventListener("click", (e) => {
+          if (e.target.tagName !== "SELECT" && e.target.tagName !== "BUTTON" && e.target.tagName !== "OPTION") {
+            const loc = row.getAttribute("data-location");
+            const scoreWardSelect = document.getElementById("score-ward");
+            if (scoreWardSelect && loc) {
+              for (let i = 0; i < scoreWardSelect.options.length; i++) {
+                if (scoreWardSelect.options[i].value === loc) {
+                  scoreWardSelect.selectedIndex = i;
+                  break;
+                }
+              }
+            }
+          }
+        });
+      });
+
+      // Attach change listeners to status dropdowns
+      document.querySelectorAll(".alert-status-select").forEach(select => {
+        select.addEventListener("change", (e) => {
+          const idx = e.target.getAttribute("data-index");
+          const newStatus = e.target.value;
+          
+          let reports = JSON.parse(localStorage.getItem("jalrakshak_field_reports")) || [];
+          if (reports[idx]) {
+            reports[idx].status = newStatus;
+            localStorage.setItem("jalrakshak_field_reports", JSON.stringify(reports));
+          }
+          
+          e.target.className = `alert-status-select ${newStatus.toLowerCase() === "confirmed" ? "status-confirmed" : "status-suspected"}`;
+        });
+      });
+
+      // Attach delete click handlers
+      document.querySelectorAll(".btn-delete-case").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const idx = parseInt(e.target.getAttribute("data-index"), 10);
+          
+          let reports = JSON.parse(localStorage.getItem("jalrakshak_field_reports")) || [];
+          reports.splice(idx, 1);
+          localStorage.setItem("jalrakshak_field_reports", JSON.stringify(reports));
+          
+          loadAlerts();
+        });
+      });
+    }
+
     async function checkHealth() {
       const badge = document.getElementById("api-status");
       if (!badge) return;
@@ -451,10 +451,10 @@
       }
     }
 
-    // Handle /score
     document.getElementById("score-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const body = {
+        ward_id: document.getElementById("score-ward").value,
         turbidity: parseFloat(document.getElementById("score-turbidity").value),
         ph: parseFloat(document.getElementById("score-ph").value),
         population: parseInt(document.getElementById("score-pop").value, 10),
@@ -482,36 +482,6 @@
       }
     });
 
-    // Handle /predict-cause
-    document.getElementById("cause-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const body = {
-        ward_id: parseInt(document.getElementById("cause-ward").value, 10),
-        turbidity: parseFloat(document.getElementById("cause-turbidity").value),
-        waterborne_symptom_ratio: parseFloat(document.getElementById("cause-ratio").value),
-        contamination_flag: document.getElementById("cause-flag").checked
-      };
-
-      try {
-        const res = await fetch(`${API_BASE}/predict-cause`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body)
-        });
-        const data = await res.json();
-
-        const out = document.getElementById("cause-result");
-        out.style.display = "block";
-        const isLikely = data.is_waterborne_likely;
-        out.innerHTML = `
-          <p>Waterborne Likely: <strong style="color: ${isLikely ? 'var(--pastel-red-text)' : 'var(--pastel-green-text)'}">${isLikely ? 'YES' : 'NO'}</strong></p>
-        `;
-      } catch (err) {
-        alert("Failed to connect to API server.");
-      }
-    });
-
-    // Handle /confirm
     document.getElementById("confirm-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const body = {
@@ -541,7 +511,6 @@
       }
     });
 
-    // Handle /retrain
     document.getElementById("retrain-btn").addEventListener("click", async () => {
       try {
         const res = await fetch(`${API_BASE}/retrain`, { method: "POST" });
@@ -549,7 +518,7 @@
         
         const out = document.getElementById("admin-result");
         out.style.display = "block";
-        out.innerHTML = `<p style="color: var(--accent-cyan); font-weight:700; justify-content:flex-start;">Models retrained successfully using ${data.total_rows_used} total rows!</p>`;
+        out.innerHTML = `<p style="color: var(--accent-cyan); font-weight:700; justify-content:flex-start;">Models updated successfully using ${data.total_rows_used} total rows!</p>`;
       } catch (err) {
         alert("Failed to connect to API server.");
       }

@@ -10,36 +10,25 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Leaflet (for real Geographic Incident Heatmap) -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
   <style>
     :root {
       --bg-gradient: radial-gradient(circle at 50% 50%, #1e627a 0%, #113f50 50%, #0a2530 100%);
       --card-bg: rgba(255, 255, 255, 0.95);
-
-      /* Refined drop-style glow tokens */
       --drop-cyan: #00d4ff;
       --drop-glow: 0 0 8px rgba(0, 212, 255, 0.7), 0 0 16px rgba(0, 212, 255, 0.35);
       --drop-glow-hover: 0 0 12px rgba(0, 212, 255, 0.9), 0 0 24px rgba(0, 212, 255, 0.5);
-
       --text-main: #0f172a;
       --text-muted: #475569;
       --radius-droplet: 24px 24px 24px 6px;
-
       --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: var(--bg-gradient);
       background-attachment: fixed;
@@ -52,51 +41,12 @@
       -moz-osx-font-smoothing: grayscale;
       font-size: 1.1rem;
     }
-
-    h1, h2, h3, h4, .btn-primary, .btn-secondary, .kpi-card .value {
-      font-family: var(--font-heading);
-    }
-
-    header, .filters-bar, .kpi-grid, .dashboard-grid, #reports-table-card {
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Header */
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 28px;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .header-title h1 {
-      font-size: 3.2rem;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-      color: #ffffff;
-      text-shadow: 0 2px 8px rgba(0, 212, 255, 0.25);
-      line-height: 1.1;
-    }
-
-    .header-title p {
-      font-size: 1.4rem;
-      font-weight: 600;
-      color: var(--drop-cyan);
-      margin-top: 4px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-
-    .header-controls {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    /* Drop-Style Buttons */
+    h1, h2, h3, h4, .btn-primary, .btn-secondary, .kpi-card .value { font-family: var(--font-heading); }
+    header, .filters-bar, .kpi-grid, .dashboard-grid, #reports-table-card { position: relative; z-index: 1; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 20px; }
+    .header-title h1 { font-size: 3.2rem; font-weight: 900; letter-spacing: -0.5px; color: #ffffff; text-shadow: 0 2px 8px rgba(0, 212, 255, 0.25); line-height: 1.1; }
+    .header-title p { font-size: 1.4rem; font-weight: 600; color: var(--drop-cyan); margin-top: 4px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .header-controls { display: flex; align-items: center; gap: 16px; }
     .btn-primary {
       background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
       color: #ffffff;
@@ -110,12 +60,7 @@
       transition: all 0.25s ease;
       box-shadow: var(--drop-glow);
     }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--drop-glow-hover);
-    }
-
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--drop-glow-hover); }
     .btn-secondary {
       background: rgba(255, 255, 255, 0.95);
       color: #0f172a;
@@ -128,12 +73,7 @@
       transition: all 0.2s ease;
       box-shadow: var(--drop-glow);
     }
-
-    .btn-secondary:hover {
-      background: #ffffff;
-      box-shadow: var(--drop-glow-hover);
-    }
-
+    .btn-secondary:hover { background: #ffffff; box-shadow: var(--drop-glow-hover); }
     .lang-select {
       padding: 12px 18px;
       border: 2px solid var(--drop-cyan);
@@ -147,8 +87,6 @@
       cursor: pointer;
       box-shadow: var(--drop-glow);
     }
-
-    /* SUBTLE DROP-GLOW CONTAINERS */
     .filters-bar, .kpi-card, .card {
       background: var(--card-bg);
       backdrop-filter: blur(12px);
@@ -158,34 +96,10 @@
       padding: 26px;
       transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
-
-    .kpi-card:hover, .card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--drop-glow-hover), 0 12px 28px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Filters Bar Layout */
-    .filters-bar {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 28px;
-    }
-
-    .filter-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .filter-group label {
-      font-size: 0.9rem;
-      font-weight: 800;
-      color: #0284c7;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-    }
-
+    .kpi-card:hover, .card:hover { transform: translateY(-2px); box-shadow: var(--drop-glow-hover), 0 12px 28px rgba(0, 0, 0, 0.3); }
+    .filters-bar { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 28px; }
+    .filter-group { display: flex; flex-direction: column; gap: 6px; }
+    .filter-group label { font-size: 0.9rem; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: 0.8px; }
     .filter-group select {
       padding: 10px 16px;
       border: 1.5px solid var(--drop-cyan);
@@ -198,357 +112,52 @@
       font-size: 1.05rem;
       box-shadow: 0 0 6px rgba(0, 212, 255, 0.3);
     }
-
-    /* KPI Cards */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px;
-      margin-bottom: 28px;
-    }
-
-    .kpi-card .label {
-      font-size: 1.05rem;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-    }
-
-    .kpi-card .value {
-      font-size: 3.5rem;
-      font-weight: 900;
-      line-height: 1;
-      color: #0f172a;
-      margin-bottom: 8px;
-      text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
-    }
-
-    .kpi-card .status.danger {
-      color: #dc2626;
-      font-weight: 700;
-      font-size: 1rem;
-    }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 28px;
-      margin-bottom: 28px;
-    }
-
-    @media (max-width: 992px) {
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      border-bottom: 2px solid var(--drop-cyan);
-      padding-bottom: 12px;
-    }
-
-    .card-header h2 {
-      font-size: 1.5rem;
-      font-weight: 800;
-      letter-spacing: -0.2px;
-      color: #0f172a;
-    }
-
-    /* Form Panel */
-    .form-panel {
-      display: none;
-      animation: slideDown 0.3s ease-out forwards;
-      background: rgba(255, 255, 255, 0.98);
-      border: 2px solid var(--drop-cyan);
-      box-shadow: var(--drop-glow-hover), 0 10px 30px rgba(0, 0, 0, 0.3);
-      margin-bottom: 28px;
-    }
-
-    .form-panel.active {
-      display: block;
-    }
-
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .form-group label {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: #0284c7;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .form-group input,
-    .form-group select {
-      padding: 12px 16px;
-      border: 1.5px solid #94a3b8;
-      border-radius: 12px;
-      font-family: var(--font-body);
-      font-size: 1.05rem;
-      outline: none;
-      background: #ffffff;
-      color: #0f172a;
-      transition: all 0.2s ease;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus {
-      border-color: var(--drop-cyan);
-      box-shadow: var(--drop-glow);
-    }
-
-    .checkbox-section-title {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: #0284c7;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 12px;
-    }
-
-    .checkbox-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 14px;
-    }
-
-    .checkbox-card {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      background: #f8fafc;
-      border: 1.5px solid var(--drop-cyan);
-      border-radius: 14px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 0 6px rgba(0, 212, 255, 0.25);
-    }
-
-    .checkbox-card:hover {
-      background: #e0f2fe;
-      box-shadow: var(--drop-glow);
-    }
-
-    .checkbox-card span {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #334155;
-    }
-
-    .checkbox-card input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--drop-cyan);
-    }
-
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 14px;
-      margin-top: 20px;
-    }
-
-    /* Map Section */
-    .map-container {
-      width: 100%;
-      height: 280px;
-      background: radial-gradient(circle, #154e60 0%, #09212a 100%);
-      border-radius: 18px;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid var(--drop-cyan);
-      box-shadow: inset 0 0 12px rgba(0, 212, 255, 0.4);
-    }
-
-    /* Leaflet map fills the same box the fake SVG used to occupy */
-    #leaflet-map {
-      width: 100%;
-      height: 100%;
-      border-radius: 16px;
-      background: transparent;
-    }
-
-    .map-status-msg {
-      color: #cbd5e1;
-      font-size: 0.95rem;
-      font-weight: 600;
-      text-align: center;
-      padding: 0 16px;
-    }
-
-    /* Leaflet popup restyle to match dashboard look */
-    .leaflet-popup-content-wrapper {
-      border-radius: 14px;
-      border: 1.5px solid var(--drop-cyan);
-    }
-
-    .map-popup h3 {
-      font-family: var(--font-heading);
-      font-size: 1.1rem;
-      margin-bottom: 6px;
-      color: #0f172a;
-    }
-
-    .map-popup p {
-      font-size: 0.95rem;
-      color: #334155;
-      margin: 2px 0;
-    }
-
-    .map-popup button {
-      margin-top: 8px;
-      padding: 6px 14px;
-      border: none;
-      border-radius: 10px;
-      background: var(--drop-cyan);
-      color: #0f172a;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .legend-container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      justify-content: center;
-      height: 280px;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .legend-color {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      box-shadow: 0 0 8px currentColor;
-    }
-
-    .legend-color.red-orange {
-      background: radial-gradient(circle, #ef4444 40%, #f59e0b 100%);
-      color: #ef4444;
-    }
-
-    .legend-color.yellow {
-      background-color: #eab308;
-      color: #eab308;
-    }
-
-    .legend-color.green {
-      background-color: #10b981;
-      color: #10b981;
-    }
-
-    .legend-text {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: #1e293b;
-    }
-
-    /* Data Table */
-    .table-container {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 1.05rem;
-    }
-
-    th {
-      font-family: var(--font-heading);
-      background-color: rgba(0, 212, 255, 0.12);
-      padding: 16px 14px;
-      font-weight: 800;
-      color: #0284c7;
-      border-bottom: 2px solid var(--drop-cyan);
-      text-transform: uppercase;
-      font-size: 0.9rem;
-      letter-spacing: 0.8px;
-    }
-
-    td {
-      padding: 16px 14px;
-      border-bottom: 1px solid #e2e8f0;
-      color: #334155;
-      font-weight: 600;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 14px;
-      font-size: 0.9rem;
-      font-weight: 800;
-      letter-spacing: 0.3px;
-    }
-
-    .badge.suspected {
-      background: #fef3c7;
-      color: #d97706;
-      border: 1.5px solid #fde68a;
-      box-shadow: 0 0 8px rgba(245, 158, 11, 0.35);
-    }
-
-    .risk-tag {
-      display: inline-block;
-      background: #e0f2fe;
-      color: #0369a1;
-      border: 1.5px solid var(--drop-cyan);
-      padding: 6px 12px;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      font-weight: 700;
-      margin-right: 6px;
-      margin-bottom: 4px;
-      box-shadow: 0 0 6px rgba(0, 212, 255, 0.25);
-    }
-
-    .new-row-highlight {
-      animation: highlightFade 2.5s ease-out;
-    }
-
-    @keyframes highlightFade {
-      0% { background-color: rgba(0, 212, 255, 0.3); }
-      100% { background-color: transparent; }
-    }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 28px; }
+    .kpi-card .label { font-size: 1.05rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; }
+    .kpi-card .value { font-size: 3.5rem; font-weight: 900; line-height: 1; color: #0f172a; margin-bottom: 8px; text-shadow: 0 0 8px rgba(0, 212, 255, 0.4); }
+    .kpi-card .status.danger { color: #dc2626; font-weight: 700; font-size: 1rem; }
+    .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 28px; margin-bottom: 28px; }
+    @media (max-width: 992px) { .dashboard-grid { grid-template-columns: 1fr; } }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--drop-cyan); padding-bottom: 12px; }
+    .card-header h2 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.2px; color: #0f172a; }
+    .form-panel { display: none; animation: slideDown 0.3s ease-out forwards; background: rgba(255, 255, 255, 0.98); border: 2px solid var(--drop-cyan); box-shadow: var(--drop-glow-hover), 0 10px 30px rgba(0, 0, 0, 0.3); margin-bottom: 28px; }
+    .form-panel.active { display: block; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 20px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-group label { font-size: 0.95rem; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-group input, .form-group select { padding: 12px 16px; border: 1.5px solid #94a3b8; border-radius: 12px; font-family: var(--font-body); font-size: 1.05rem; outline: none; background: #ffffff; color: #0f172a; transition: all 0.2s ease; }
+    .form-group input:focus, .form-group select:focus { border-color: var(--drop-cyan); box-shadow: var(--drop-glow); }
+    .checkbox-section-title { font-size: 0.95rem; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+    .checkbox-card { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #f8fafc; border: 1.5px solid var(--drop-cyan); border-radius: 14px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 0 6px rgba(0, 212, 255, 0.25); }
+    .checkbox-card:hover { background: #e0f2fe; box-shadow: var(--drop-glow); }
+    .checkbox-card span { font-size: 1rem; font-weight: 600; color: #334155; }
+    .checkbox-card input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--drop-cyan); }
+    .form-actions { display: flex; justify-content: flex-end; gap: 14px; margin-top: 20px; }
+    .map-container { width: 100%; height: 280px; background: radial-gradient(circle, #154e60 0%, #09212a 100%); border-radius: 18px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid var(--drop-cyan); box-shadow: inset 0 0 12px rgba(0, 212, 255, 0.4); }
+    #leaflet-map { width: 100%; height: 100%; border-radius: 16px; background: transparent; }
+    .legend-container { display: flex; flex-direction: column; gap: 20px; justify-content: center; height: 280px; }
+    .legend-item { display: flex; align-items: center; gap: 14px; }
+    .legend-color { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 8px currentColor; }
+    .legend-color.red-orange { background: radial-gradient(circle, #ef4444 40%, #f59e0b 100%); color: #ef4444; }
+    .legend-color.yellow { background-color: #eab308; color: #eab308; }
+    .legend-color.green { background-color: #10b981; color: #10b981; }
+    .legend-text { font-size: 1.05rem; font-weight: 700; color: #1e293b; }
+    .table-container { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 1.05rem; }
+    th { font-family: var(--font-heading); background-color: rgba(0, 212, 255, 0.12); padding: 16px 14px; font-weight: 800; color: #0284c7; border-bottom: 2px solid var(--drop-cyan); text-transform: uppercase; font-size: 0.9rem; letter-spacing: 0.8px; }
+    td { padding: 16px 14px; border-bottom: 1px solid #e2e8f0; color: #334155; font-weight: 600; }
+    .badge { display: inline-block; padding: 6px 14px; border-radius: 14px; font-size: 0.9rem; font-weight: 800; letter-spacing: 0.3px; }
+    .badge.suspected { background: #fef3c7; color: #d97706; border: 1.5px solid #fde68a; box-shadow: 0 0 8px rgba(245, 158, 11, 0.35); }
+    .badge.confirmed { background: #fee2e2; color: #b91c1c; border: 1.5px solid #fca5a5; box-shadow: 0 0 8px rgba(185, 28, 28, 0.35); }
+    .risk-tag { display: inline-block; background: #e0f2fe; color: #0369a1; border: 1.5px solid var(--drop-cyan); padding: 6px 12px; border-radius: 10px; font-size: 0.9rem; font-weight: 700; margin-right: 6px; margin-bottom: 4px; box-shadow: 0 0 6px rgba(0, 212, 255, 0.25); }
+    .new-row-highlight { animation: highlightFade 2.5s ease-out; }
+    @keyframes highlightFade { 0% { background-color: rgba(0, 212, 255, 0.3); } 100% { background-color: transparent; } }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
   <header>
     <div class="header-title">
       <h1 data-key="title">JalRakshak</h1>
@@ -565,7 +174,6 @@
     </div>
   </header>
 
-  <!-- Filters -->
   <div class="filters-bar">
     <div class="filter-group">
       <label data-key="lbl_ward">Ward / Zone</label>
@@ -588,7 +196,6 @@
     </div>
   </div>
 
-  <!-- Key Metrics -->
   <div class="kpi-grid">
     <div class="kpi-card">
       <div class="label" data-key="kpi_alerts_label">Water Contamination Alerts</div>
@@ -597,7 +204,6 @@
     </div>
   </div>
 
-  <!-- HIDDEN REPORT CASE FORM PANEL -->
   <div class="card form-panel" id="report-section">
     <div class="card-header">
       <h2 data-key="form_title">Report New Field Case & Environmental Risk Assessment</h2>
@@ -630,31 +236,25 @@
         </div>
       </div>
 
-      <!-- Risk Factor Checkboxes -->
       <div class="checkbox-section">
         <div class="checkbox-section-title" data-key="risk_section_title">Observed Risk Factors & Environmental Indicators:</div>
         <div class="checkbox-grid">
-
           <label class="checkbox-card">
             <input type="checkbox" name="risk_factors" value="Dirty / Muddy Water" data-risk-key="risk_dirty">
             <span data-key="risk_dirty">Dirty / Muddy Water</span>
           </label>
-
           <label class="checkbox-card">
             <input type="checkbox" name="risk_factors" value="Mosquitoes" data-risk-key="risk_mosquitoes">
             <span data-key="risk_mosquitoes">Mosquitoes</span>
           </label>
-
           <label class="checkbox-card">
             <input type="checkbox" name="risk_factors" value="Family Members Ill" data-risk-key="risk_family_ill">
             <span data-key="risk_family_ill">Family Members Ill</span>
           </label>
-
           <label class="checkbox-card">
             <input type="checkbox" name="risk_factors" value="Waterlogging" data-risk-key="risk_waterlogging">
             <span data-key="risk_waterlogging">Waterlogging</span>
           </label>
-
         </div>
       </div>
 
@@ -665,10 +265,7 @@
     </form>
   </div>
 
-  <!-- Dashboard Main Grid -->
   <div class="dashboard-grid">
-
-    <!-- Map Section -->
     <div class="card" style="margin-bottom: 0;">
       <div class="card-header">
         <h2 data-key="map_title">Geographic Incident Heatmap</h2>
@@ -679,7 +276,6 @@
       </div>
     </div>
 
-    <!-- Heatmap Key Legend -->
     <div class="card" style="margin-bottom: 0;">
       <div class="card-header">
         <h2 data-key="legend_title">Heatmap Key</h2>
@@ -699,10 +295,8 @@
         </div>
       </div>
     </div>
-
   </div>
 
-  <!-- Recent Reports Data Table -->
   <div class="card" id="reports-table-card">
     <div class="card-header">
       <h2 data-key="table_title">Recent Field Case Reports</h2>
@@ -720,58 +314,7 @@
           </tr>
         </thead>
         <tbody id="case-table-body">
-          <tr>
-            <td style="font-weight: 800; color: #0284c7;">#RPT-1042</td>
-            <td>Aug 23, 2026</td>
-            <td>Ward 12 - Mumbra</td>
-            <td data-src-key="src_tap">Public Tap</td>
-            <td>
-              <span class="risk-tag" data-key="risk_dirty">Dirty / Muddy Water</span>
-              <span class="risk-tag" data-key="risk_family_ill">Family Members Ill</span>
-            </td>
-            <td><span class="badge suspected" data-key="status_suspected">Suspected</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight: 800; color: #0284c7;">#RPT-1041</td>
-            <td>Aug 23, 2026</td>
-            <td>Ward 7 - Kalwa</td>
-            <td data-src-key="src_borewell">Borewell</td>
-            <td>
-              <span class="risk-tag" data-key="risk_waterlogging">Waterlogging</span>
-            </td>
-            <td><span class="badge suspected" data-key="status_suspected">Suspected</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight: 800; color: #0284c7;">#RPT-1040</td>
-            <td>Aug 22, 2026</td>
-            <td>Ward 9 - Kausa</td>
-            <td data-src-key="src_tanker">Tanker Supply</td>
-            <td>
-              <span class="risk-tag" data-key="risk_dirty">Dirty / Muddy Water</span>
-              <span class="risk-tag" data-key="risk_mosquitoes">Mosquitoes</span>
-            </td>
-            <td><span class="badge suspected" data-key="status_suspected">Suspected</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight: 800; color: #0284c7;">#RPT-1039</td>
-            <td>Aug 21, 2026</td>
-            <td>Ward 15 - Vartak Nagar</td>
-            <td data-src-key="src_tap">Public Tap</td>
-            <td>
-              <span class="risk-tag" data-key="risk_dirty">Dirty / Muddy Water</span>
-            </td>
-            <td><span class="badge suspected" data-key="status_suspected">Suspected</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight: 800; color: #0284c7;">#RPT-1038</td>
-            <td>Aug 21, 2026</td>
-            <td>Ward 4 - Naupada</td>
-            <td data-src-key="src_well">Open Well</td>
-            <td>
-              <span class="risk-tag" data-key="risk_mosquitoes">Mosquitoes</span>
-            </td>
-            <td><span class="badge suspected" data-key="status_suspected">Suspected</span></td>
-          </tr>
+          <!-- Populated dynamically via script -->
         </tbody>
       </table>
     </div>
@@ -780,148 +323,19 @@
   <script>
     const translations = {
       en: {
-        title: "JalRakshak",
-        subtitle: "User Dashboard",
-        login_btn: "Log In",
-        report_btn: "+ Report New Case",
-        lbl_ward: "Ward / Zone",
-        all_wards: "All Wards",
-        lbl_timerange: "Time Range",
-        time_7days: "Last 7 Days",
-        time_30days: "Last 30 Days",
-        time_ytd: "Year to Date",
-        kpi_alerts_label: "Water Contamination Alerts",
-        kpi_alerts_sub: "2 Critical flags in Ward 12 - Mumbra & Ward 9 - Kausa",
-        form_title: "Report New Field Case & Environmental Risk Assessment",
-        form_subtitle: "Field Health Worker Portal",
-        lbl_ward_loc: "Ward / Location *",
-        opt_select_ward: "Select Ward",
-        lbl_watersource: "Primary Water Source *",
-        opt_select_water: "Select Water Source",
-        src_tap: "Public Tap",
-        src_borewell: "Borewell",
-        src_tanker: "Tanker Supply",
-        src_well: "Open Well",
-        risk_section_title: "Observed Risk Factors & Environmental Indicators:",
-        risk_dirty: "Dirty / Muddy Water",
-        risk_mosquitoes: "Mosquitoes",
-        risk_family_ill: "Family Members Ill",
-        risk_waterlogging: "Waterlogging",
-        btn_cancel: "Cancel",
-        btn_submit: "Submit Field Report",
-        map_title: "Geographic Incident Heatmap",
-        map_updated: "Updated 10 mins ago",
-        legend_title: "Heatmap Key",
-        legend_confirmed: "Red / Orange - Confirmed Case Alert",
-        legend_suspect: "Yellow - Suspect Case Alert",
-        legend_safe: "Green - Safe Zone",
-        table_title: "Recent Field Case Reports",
-        th_id: "Report ID",
-        th_date: "Reported Date",
-        th_ward: "Ward / Location",
-        th_water: "Water Source",
-        th_risks: "Observed Risk Factors",
-        th_status: "Status",
-        status_suspected: "Suspected",
-        none_specified: "None specified",
-        map_loading: "Loading live ward data...",
-        map_error: "Couldn't load live ward data - showing map only"
-      },
-      hi: {
-        title: "जलरक्षक",
-        subtitle: "उपयोगकर्ता डैशबोर्ड",
-        login_btn: "लॉग इन करें",
-        report_btn: "+ नया मामला दर्ज करें",
-        lbl_ward: "वार्ड / क्षेत्र",
-        all_wards: "सभी वार्ड",
-        lbl_timerange: "समय सीमा",
-        time_7days: "पिछले 7 दिन",
-        time_30days: "पिछले 30 दिन",
-        time_ytd: "इस वर्ष अब तक",
-        kpi_alerts_label: "जल प्रदूषण अलर्ट",
-        kpi_alerts_sub: "वार्ड 12 - मुंब्रा और वार्ड 9 - कौसा में 2 गंभीर अलर्ट",
-        form_title: "नया मामला एवं पर्यावरण जोखिम आकलन दर्ज करें",
-        form_subtitle: "फील्ड स्वास्थ्य कार्यकर्ता पोर्टल",
-        lbl_ward_loc: "वार्ड / स्थान *",
-        opt_select_ward: "वार्ड चुनें",
-        lbl_watersource: "प्राथमिक जल स्रोत *",
-        opt_select_water: "जल स्रोत चुनें",
-        src_tap: "सार्वजनिक नल",
-        src_borewell: "बोरवेल",
-        src_tanker: "टैंकर आपूर्ति",
-        src_well: "खुला कुआँ",
-        risk_section_title: "देखे गए जोखिम कारक और पर्यावरण संकेतक:",
-        risk_dirty: "गंदा / मटमैला पानी",
-        risk_mosquitoes: "मच्छर",
-        risk_family_ill: "परिवार के सदस्य बीमार",
-        risk_waterlogging: "जलभराव",
-        btn_cancel: "रद्द करें",
-        btn_submit: "रिपोर्ट जमा करें",
-        map_title: "भौगोलिक घटना हीटमैप",
-        map_updated: "10 मिनट पहले अपडेट किया गया",
-        legend_title: "हीटमैप संकेत",
-        legend_confirmed: "लाल / नारंगी - पुष्टि मामला अलर्ट",
-        legend_suspect: "पीला - संदिग्ध मामला अलर्ट",
-        legend_safe: "हरा - सुरक्षित क्षेत्र",
-        table_title: "हाल की फील्ड केस रिपोर्ट",
-        th_id: "रिपोर्ट आईडी",
-        th_date: "रिपोर्ट तिथि",
-        th_ward: "वार्ड / स्थान",
-        th_water: "जल स्रोत",
-        th_risks: "देखे गए जोखिम कारक",
-        th_status: "स्थिति",
-        status_suspected: "संदिग्ध",
-        none_specified: "कोई उल्लेख नहीं",
-        map_loading: "लाइव वार्ड डेटा लोड हो रहा है...",
-        map_error: "लाइव डेटा लोड नहीं हो सका"
-      },
-      mr: {
-        title: "जलरक्षक",
-        subtitle: "वापरकर्ता डॅशबोर्ड",
-        login_btn: "लॉग इन करा",
-        report_btn: "+ नवीन नोंद करा",
-        lbl_ward: "प्रभाग / भाग",
-        all_wards: "सर्व प्रभाग",
-        lbl_timerange: "कालावधी",
-        time_7days: "मागील ७ दिवस",
-        time_30days: "मागील ३० दिवस",
-        time_ytd: "या वर्षात आतापर्यंत",
-        kpi_alerts_label: "दूषित पाणी इशारे",
-        kpi_alerts_sub: "प्रभाग १२ - मुंब्रा आणि प्रभाग ९ - कौसा येथे २ गंभीर इशारे",
-        form_title: "नवीन केस आणि पर्यावरण जोखीम नोंदवा",
-        form_subtitle: "आरोग्य कर्मचारी पोर्टल",
-        lbl_ward_loc: "प्रभाग / ठिकाण *",
-        opt_select_ward: "प्रभाग निवडा",
-        lbl_watersource: "मुख्य पाणी स्त्रोत *",
-        opt_select_water: "पाणी स्त्रोत निवडा",
-        src_tap: "सार्वजनिक नळ",
-        src_borewell: "बोअरवेल",
-        src_tanker: "टँकर पुरवठा",
-        src_well: "उघडी विहीर",
-        risk_section_title: "आढळलेले जोखीम घटक आणि पर्यावरणीय घटक:",
-        risk_dirty: "घाण / गढूळ पाणी",
-        risk_mosquitoes: "डास",
-        risk_family_ill: "कुटुंबातील व्यक्ती आजारी",
-        risk_waterlogging: "साचलेले पाणी",
-        btn_cancel: "रद्द करा",
-        btn_submit: "अहवाल सबमिट करा",
-        map_title: "भौगोलिक घटना हीटमॅप",
-        map_updated: "१० मिनिटांपूर्वी अद्यतनित",
-        legend_title: "हीटमॅप सूची",
-        legend_confirmed: "लाल / नारंगी - नोंद झालेला धोका अलर्ट",
-        legend_suspect: "पिवळा - संशयित केस अलर्ट",
-        legend_safe: "हिरवा - सुरक्षित क्षेत्र",
-        table_title: "अलीकडील अहवाल",
-        th_id: "अहवाल आयडी",
-        th_date: "अहवाल तारीख",
-        th_ward: "प्रभाग / ठिकाण",
-        th_water: "पाणी स्त्रोत",
-        th_risks: "आढळलेले जोखीम घटक",
-        th_status: "स्थिती",
-        status_suspected: "संशयित",
-        none_specified: "काहीही नाही",
-        map_loading: "लाइव्ह वॉर्ड डेटा लोड होत आहे...",
-        map_error: "लाइव्ह डेटा लोड करता आला नाही"
+        title: "JalRakshak", subtitle: "User Dashboard", login_btn: "Log In", report_btn: "+ Report New Case",
+        lbl_ward: "Ward / Zone", all_wards: "All Wards", lbl_timerange: "Time Range", time_7days: "Last 7 Days",
+        time_30days: "Last 30 Days", time_ytd: "Year to Date", kpi_alerts_label: "Water Contamination Alerts",
+        kpi_alerts_sub: "2 Critical flags in Ward 12 - Mumbra & Ward 9 - Kausa", form_title: "Report New Field Case & Environmental Risk Assessment",
+        form_subtitle: "Field Health Worker Portal", lbl_ward_loc: "Ward / Location *", opt_select_ward: "Select Ward",
+        lbl_watersource: "Primary Water Source *", opt_select_water: "Select Water Source", src_tap: "Public Tap",
+        src_borewell: "Borewell", src_tanker: "Tanker Supply", src_well: "Open Well", risk_section_title: "Observed Risk Factors & Environmental Indicators:",
+        risk_dirty: "Dirty / Muddy Water", risk_mosquitoes: "Mosquitoes", risk_family_ill: "Family Members Ill", risk_waterlogging: "Waterlogging",
+        btn_cancel: "Cancel", btn_submit: "Submit Field Report", map_title: "Geographic Incident Heatmap", map_updated: "Updated 10 mins ago",
+        legend_title: "Heatmap Key", legend_confirmed: "Red / Orange - Confirmed Case Alert", legend_suspect: "Yellow - Suspect Case Alert",
+        legend_safe: "Green - Safe Zone", table_title: "Recent Field Case Reports", th_id: "Report ID", th_date: "Reported Date",
+        th_ward: "Ward / Location", th_water: "Water Source", th_risks: "Observed Risk Factors", th_status: "Status",
+        status_suspected: "Suspected", status_confirmed: "Confirmed", none_specified: "None specified"
       }
     };
 
@@ -931,194 +345,105 @@
     const toggleBtn = document.getElementById('toggle-report-btn');
     const loginBtn = document.getElementById('login-btn');
     const cancelBtn = document.getElementById('cancel-report-btn');
-    const langSelect = document.getElementById('lang-select');
 
-    // Redirection to Login Page (login.html)
-    loginBtn.addEventListener('click', () => {
-      window.location.href = 'login.html';
-    });
-
-    langSelect.addEventListener('change', (e) => {
-      currentLang = e.target.value;
-      updateLanguage();
-    });
-
-    function updateLanguage() {
-      const langData = translations[currentLang];
-
-      document.querySelectorAll('[data-key]').forEach(elem => {
-        const key = elem.getAttribute('data-key');
-        if (langData[key]) {
-          elem.textContent = langData[key];
-        }
-      });
-
-      document.querySelectorAll('[data-src-key]').forEach(elem => {
-        const key = elem.getAttribute('data-src-key');
-        if (langData[key]) {
-          elem.textContent = langData[key];
-        }
-      });
-    }
-
-    // Ward Filtering Logic
-    document.getElementById('filter-ward').addEventListener('change', function(e) {
-      const selectedWard = e.target.value;
-      const rows = document.querySelectorAll('#case-table-body tr');
-
-      rows.forEach(row => {
-        const wardCell = row.children[2].textContent;
-        if (selectedWard.includes('All') || selectedWard.includes('सभी') || selectedWard.includes('सर्व') || wardCell === selectedWard) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-      });
-    });
+    loginBtn.addEventListener('click', () => { window.location.href = 'login.html'; });
 
     toggleBtn.addEventListener('click', () => {
       reportSection.classList.add('active');
       reportSection.scrollIntoView({ behavior: 'smooth' });
     });
 
-    cancelBtn.addEventListener('click', () => {
-      reportSection.classList.remove('active');
+    cancelBtn.addEventListener('click', () => { reportSection.classList.remove('active'); });
+
+    // Render Recent Field Reports from localStorage array
+    function renderCaseTable() {
+      const tbody = document.getElementById('case-table-body');
+      const reports = JSON.parse(localStorage.getItem('jalrakshak_field_reports')) || [
+        {
+          reportId: "#RPT-1042",
+          date: "Aug 23, 2026",
+          location: "Ward 12 - Mumbra",
+          waterSource: "Public Tap",
+          riskFactors: "Dirty / Muddy Water, Family Members Ill",
+          status: "Suspected"
+        }
+      ];
+
+      tbody.innerHTML = reports.map(rep => {
+        const statusClass = rep.status.toLowerCase() === 'confirmed' ? 'confirmed' : 'suspected';
+        return `
+          <tr>
+            <td style="font-weight: 800; color: #0284c7;">${rep.reportId}</td>
+            <td>${rep.date}</td>
+            <td>${rep.location}</td>
+            <td>${rep.waterSource}</td>
+            <td>${rep.riskFactors}</td>
+            <td><span class="badge ${statusClass}">${rep.status}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Listen to storage events to sync status updates from admin.html
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'jalrakshak_field_reports') {
+        renderCaseTable();
+      }
     });
 
     document.getElementById('case-report-form').addEventListener('submit', function(e) {
       e.preventDefault();
 
+      const reportId = `#RPT-${reportCounter++}`;
       const location = document.getElementById('location').value;
       const waterSourceElem = document.getElementById('waterSource');
       const selectedOption = waterSourceElem.options[waterSourceElem.selectedIndex];
-      const waterSourceKey = selectedOption.getAttribute('data-key');
+      const waterSourceText = selectedOption.text;
 
       const checkedBoxes = document.querySelectorAll('input[name="risk_factors"]:checked');
-      const selectedRiskKeys = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-risk-key'));
-
-      const langData = translations[currentLang];
-
-      let riskTagsHtml = `<em>${langData.none_specified}</em>`;
-      if (selectedRiskKeys.length > 0) {
-        riskTagsHtml = selectedRiskKeys.map(key => `<span class="risk-tag" data-key="${key}">${langData[key]}</span>`).join(' ');
-      }
+      const selectedRiskValues = Array.from(checkedBoxes).map(cb => cb.value);
 
       const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
-      const tbody = document.getElementById('case-table-body');
-      const newRow = document.createElement('tr');
-      newRow.className = 'new-row-highlight';
-      newRow.innerHTML = `
-        <td style="font-weight: 800; color: #0284c7;">#RPT-${reportCounter++}</td>
-        <td>${today}</td>
-        <td>${location}</td>
-        <td data-src-key="${waterSourceKey}">${langData[waterSourceKey]}</td>
-        <td>${riskTagsHtml}</td>
-        <td><span class="badge suspected" data-key="status_suspected">${langData.status_suspected}</span></td>
-      `;
+      const caseData = {
+        reportId: reportId,
+        date: today,
+        location: location,
+        waterSource: waterSourceText,
+        riskFactors: selectedRiskValues.length > 0 ? selectedRiskValues.join(', ') : 'None specified',
+        status: 'Suspected',
+        timestamp: Date.now()
+      };
 
-      tbody.insertBefore(newRow, tbody.firstChild);
+      // Append to shared array in localStorage
+      let reports = JSON.parse(localStorage.getItem('jalrakshak_field_reports')) || [
+        {
+          reportId: "#RPT-1042",
+          date: "Aug 23, 2026",
+          location: "Ward 12 - Mumbra",
+          waterSource: "Public Tap",
+          riskFactors: "Dirty / Muddy Water, Family Members Ill",
+          status: "Suspected"
+        }
+      ];
+      reports.unshift(caseData);
+      localStorage.setItem('jalrakshak_field_reports', JSON.stringify(reports));
 
+      renderCaseTable();
       this.reset();
       reportSection.classList.remove('active');
       document.getElementById('reports-table-card').scrollIntoView({ behavior: 'smooth' });
     });
 
-    /* ---------------------------------------------------------------
-       LIVE HEATMAP (Leaflet) — replaces the old hardcoded SVG circles
-       Mirrors the color logic + data shape from RiskMap.jsx so the
-       React admin view and this page stay visually consistent.
-       Expects GET /api/wards/summary to return an array of wards:
-       { id, name, lat, lng, risk_tier, case_count, turbidity }
-    --------------------------------------------------------------- */
-
-    // Same mapping as getColor() in RiskMap.jsx
-    function getRiskColor(risk) {
-      switch ((risk || '').toUpperCase()) {
-        case 'GREEN': return '#10b981';
-        case 'YELLOW': return '#eab308';
-        case 'ORANGE': return '#f59e0b';
-        case 'RED': return '#ef4444';
-        default: return '#9ca3af'; // gray fallback, matches RiskMap.jsx default
-      }
-    }
-
-    let leafletMap = null;
-
     function initLeafletMap() {
-      leafletMap = L.map('leaflet-map', {
-        scrollWheelZoom: true
-      }).setView([19.03, 72.85], 12); // Thane region, matches RiskMap.jsx center
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-        maxZoom: 19
-      }).addTo(leafletMap);
-
-      loadWardData();
+      const map = L.map('leaflet-map').setView([19.03, 72.85], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     }
 
-    async function loadWardData() {
-      try {
-        const res = await fetch('http://localhost:5000/api/wards/summary');
-        if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-        const data = await res.json();
-        const wards = data.wards; // API returns { success, wards: [...] }, not a bare array
-        plotWards(wards);
-      } catch (err) {
-        console.error('Failed to load /api/wards/summary:', err);
-        // Fail gracefully — map still renders, just without live markers
-        const label = document.getElementById('map-updated-label');
-        if (label) {
-          label.textContent = translations[currentLang].map_error || "Couldn't load live ward data";
-          label.style.color = '#f87171';
-        }
-      }
-    }
-
-    function plotWards(wards) {
-      if (!Array.isArray(wards) || !leafletMap) return;
-
-      wards.forEach(ward => {
-        if (typeof ward.lat !== 'number' || typeof ward.lng !== 'number') return;
-
-        const color = getRiskColor(ward.risk_tier);
-
-        const marker = L.circleMarker([ward.lat, ward.lng], {
-          radius: 16,
-          color: color,
-          fillColor: color,
-          fillOpacity: 0.75,
-          weight: 3
-        }).addTo(leafletMap);
-
-        const popupHtml = `
-          <div class="map-popup">
-            <h3>${ward.name ?? 'Unknown Ward'}</h3>
-            <p><strong>Risk:</strong> ${ward.risk_tier ?? 'N/A'}</p>
-            <p><strong>Cases:</strong> ${ward.case_count ?? 'N/A'}</p>
-            <p><strong>Turbidity:</strong> ${ward.turbidity ?? 'N/A'}</p>
-          </div>
-        `;
-        marker.bindPopup(popupHtml);
-
-        // Clicking a marker also filters the reports table below,
-        // reusing the existing ward-filter dropdown/logic.
-        marker.on('click', () => {
-          const wardFilter = document.getElementById('filter-ward');
-          if (wardFilter && ward.name) {
-            const match = Array.from(wardFilter.options).find(o => o.value === ward.name || o.textContent === ward.name);
-            if (match) {
-              wardFilter.value = match.value;
-              wardFilter.dispatchEvent(new Event('change'));
-            }
-          }
-        });
-      });
-    }
-
-    // Init once DOM + Leaflet are ready
-    document.addEventListener('DOMContentLoaded', initLeafletMap);
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCaseTable();
+      initLeafletMap();
+    });
   </script>
 </body>
 </html>
